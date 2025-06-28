@@ -1,0 +1,85 @@
+---
+title: 'Developing Native Reaper Plugins'
+description: 'Overview of building custom JSFX and ReaScript tools for Brazilian mixing and composition'
+---
+
+This guide provides high-level steps to design your own audio plugins directly in **Reaper**. All examples rely only on Reaper's native technologies—**JSFX** for real-time effects and **ReaScript** (Lua or Python) for automation. The goal is to recreate features similar to well-known plugins such as Ozone, Melodyne and Realphones using only scripts you control.
+
+## 1. Mastering Chain (Ozone-style)
+
+Create a JSFX that chains multiple built-in effects:
+
+1. Start with `ReaEQ` for equalization.
+2. Add a compressor stage using `ReaComp`.
+3. Include a saturation module with the JS effect `saturation`.
+4. Finish with a maximizer (JS `soft clipper`).
+
+You can automate the creation of this chain with a Lua script:
+
+```lua
+-- master_chain.lua
+reaper.TrackFX_AddByName(track, 'ReaEQ', false, -1)
+reaper.TrackFX_AddByName(track, 'ReaComp', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Saturation', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Soft clipper', false, -1)
+```
+
+Run the script to load the chain on the selected track. Adjust parameters programmatically as needed.
+
+## 2. Vocal Tuning (Melodyne-style)
+
+Reaper ships with **ReaTune**, which can be expanded via ReaScript for better workflow:
+
+```lua
+-- select item and apply automatic tuning
+local item = reaper.GetSelectedMediaItem(0, 0)
+if item then
+  reaper.Main_OnCommand(40297, 0) -- open item in built-in pitch editor
+  -- optionally adjust ReaTune parameters here
+end
+```
+
+For more advanced manipulation, parse item pitch information using `reaper.GetTakeEnvelopeByName()` and apply corrections frame by frame.
+
+## 3. Headphone Room Simulation (Realphones-style)
+
+A JSFX can emulate headphone correction by combining EQ curves and short convolution impulses that mimic room reflections:
+
+```c
+desc:RoomSim
+slider1:gain=0<-12,12,0.1>Gain (dB)
+@sample
+spl0 = spl0 * 10^(gain/20);
+spl1 = spl1 * 10^(gain/20);
+// add simple crossfeed and IR convolution here
+```
+
+Place your measured IR wave files in the `Data` folder and load them using `impulse` functions within JSFX.
+
+## 4. Groove Generators for Forró
+
+A Lua script can create MIDI grooves based on common patterns from forró e baião. Store rhythmic templates in a table and insert them into the project as MIDI items:
+
+```lua
+local patterns = {
+  {60, "zabumba.mid"},
+  {70, "triangulo.mid"}
+}
+for _, p in ipairs(patterns) do
+  -- load each MIDI file and insert at the play cursor
+end
+```
+
+Customize the script to randomize fills or vary the swing percentage.
+
+## 5. Educational Toolkit
+
+Use ReaScript to open PDF references on harmony, contraponto and orquestração directly from inside Reaper. You can also integrate an external Python model (e.g. built with `music21`) to analyze your MIDI files and suggest chord substitutions or counterpoint lines. The script could highlight wrong notes in the notation view and propose fixes.
+
+## 6. Project Templates
+
+1. Create a new Reaper project with tracks for percussion, bass, harmony, melody and vocals.
+2. Save as template via **File > Project templates > Save template**.
+3. Automate template loading with a script that asks for project type (quadrilha, peça de teatro, coral) and sets up specific routing or track names.
+
+This approach keeps everything native to Reaper while giving flexibility to expand features over time. Each component—mastering chain, vocal tuning, room simulation, groove generation and educational helpers—can be gradually improved with more advanced JSFX coding and Python logic for AI assistance.
