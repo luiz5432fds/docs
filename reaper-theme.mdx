@@ -1,0 +1,29 @@
+---
+title: 'Custom Reaper Theme'
+description: 'Applying a custom layout and startup logo'
+---
+
+This guide explains how to install a theme that reflects the tools from these docs and show a custom splash screen when **Reaper** launches.
+
+## 1. Create the Theme Package
+
+1. Copy the default Reaper theme from your resource path (usually `ColorThemes/Default_7.0.ReaperThemeZip`).
+2. Unzip the theme file to a folder and edit the `rtconfig.txt` file using the [WALTER](https://www.reaper.fm/sdk/walter/walter.php) language. Adjust colors and layout to match the green shades used in this documentation (`#16A34A`).
+3. Replace `toolbar_blank.png` and other images with your own graphics. A sample logo named `splash.png` is included in this repo under `logo/reaper-custom.svg`—convert it to PNG and place it in the theme folder.
+4. Re‑zip the folder back into `MyCustomTheme.ReaperThemeZip`.
+
+## 2. Install the Theme
+
+1. Open **Reaper** and choose *Options ➜ Show REAPER resource path*.
+2. Copy `MyCustomTheme.ReaperThemeZip` into the `ColorThemes` directory.
+3. Restart Reaper or select the theme from *Options ➜ Themes*.
+
+## 3. Set the Startup Logo
+
+If the theme contains a `splash.png`, Reaper will display it while loading. Use the provided logo file, convert it to PNG, and include it in your theme folder. The image should be approximately 400×120 pixels.
+
+## 4. Viewing the Documentation
+
+To make these MDX docs accessible inside Reaper, run `mintlify dev` in this repo and open the local address (e.g. `http://localhost:3000`) using *Help ➜ Open web browser*. Pin the tab for quick reference.
+
+With a themed layout and custom splash screen, Reaper feels tightly integrated with the tools and guides described here.

@@ -1,0 +1,65 @@
+---
+title: 'Mix and Master Assistant'
+description: 'Scripts for spotting mix issues and guiding mastering in Reaper'
+---
+
+This guide describes how to build a **mastering assistant** within **Reaper** that analyses your mix and offers suggestions to achieve a professional result. The approach relies solely on native JSFX and ReaScript tools.
+
+## Overview
+
+1. **Mix diagnostics** – monitor frequency balance, stereo width and dynamic range.
+2. **Reference comparison** – load reference tracks and measure loudness and spectrum.
+3. **Guided adjustments** – point out problem areas and propose EQ or compression tweaks.
+4. **Final mastering chain** – apply a scripted chain of native effects and export.
+
+## 1. Mix Diagnostics
+
+Create a JSFX that captures the mix buss and provides real-time feedback on key parameters:
+
+```c
+desc:MixCheck
+@init
+threshold = -18;
+@sample
+rms = sqrt((spl0*spl0 + spl1*spl1)/2);
+// display RMS level and flag if exceeding threshold
+```
+
+Extend the script with spectrum analyzers and stereo meters. Use `gfx` functions to draw warnings when low end or high frequencies are unbalanced.
+
+## 2. Reference Comparison
+
+A Lua script can import reference tracks into a dedicated track, analyze their loudness with `reaper.GetSetProjectInfo` and calculate average RMS and LUFS values:
+
+```lua
+-- compare_to_reference.lua
+local refTrack = reaper.InsertTrackAtIndex(0, true)
+reaper.GetSetMediaTrackInfo_String(refTrack, 'P_NAME', 'Reference', true)
+-- load your reference file here
+```
+
+Display differences between your mix and the reference so you know which frequencies or levels to adjust.
+
+## 3. Guided Adjustments
+
+Based on the diagnostics, provide suggestions in a floating window using Lua GUIs. For example, if the low end is weak, prompt the user to increase bass levels on specific tracks or use `ReaEQ` with a shelf boost. If dynamics are inconsistent, recommend compression settings with `ReaComp`.
+
+## 4. Final Mastering Chain
+
+After addressing the mix issues, apply an automated chain similar to the one in the [Developing Native Reaper Plugins](/reaper-plugins#1-mastering-chain) guide:
+
+```lua
+-- apply_master_chain.lua
+local track = reaper.GetMasterTrack(0)
+reaper.TrackFX_AddByName(track, 'ReaEQ', false, -1)
+reaper.TrackFX_AddByName(track, 'ReaComp', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Saturation', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Soft clipper', false, -1)
+```
+
+Finalize by exporting the master to a high-resolution file. Use ReaScript to automate the render settings so that each project is saved with consistent quality.
+
+With these tools, you have a native assistant that points out problems, compares your mix with trusted references and guides you through a reliable mastering process entirely inside Reaper.
+
+
+Para análises ainda mais rigorosas de padrões de mercado, consulte a seção **Critical Music Assistant** em [Developing Native Reaper Plugins](/reaper-plugins#19-critical-music-assistant).

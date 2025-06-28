@@ -18,7 +18,17 @@
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "installation",
+              "development",
+              "reaper-plugins",
+              "theory-resources",
+              "brazilian-genres",
+              "sound-libraries",
+              "frevo-arranger",
+              "mastering-assistant",
+              "innovative-plugins",
+              "arranger-rhythm-tools",
+              "reaper-theme",
             ]
           },
           {
