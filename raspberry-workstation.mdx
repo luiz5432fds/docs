@@ -1,0 +1,30 @@
+---
+title: 'Firmware para Workstation em Raspberry Pi'
+---
+
+Este guia apresenta um esqueleto de firmware para transformar seu Raspberry Pi em um teclado workstation. A solução é inspirada em workstations modernas e pode ser expandida conforme a necessidade.
+
+## Visão Geral
+
+O diretório `raspi-workstation` contém:
+
+- `main.py` – ponto de entrada que inicia a interface PyQt5 com tema escuro.
+- `engines/` – motores sonoros (sintetizador, orgão, piano, modelos
+  analógicos/digitais e instrumentos acústicos).
+- `ui/` – componentes de interface, como `MainWindow`.
+
+Execute o projeto após instalar `PyQt5` e `qdarkstyle` com:
+
+```bash
+pip install PyQt5 qdarkstyle
+python main.py
+```
+
+A janela principal exibe abas para diversos motores sonoros (sintetizador,
+sampler, orgão, piano, analógico, FM, D‑50, XP‑80, QuadraSynth, Korg M, DX7,
+orquestral, coral, sanfona, metais, madeiras) além de páginas extras de
+efeitos, ADSR, performance, global, master e arpeggiador.
+
+Essa é apenas uma base inicial. Todos os motores utilizam implementações
+simplificadas; substitua os stubs por algoritmos de síntese adequados para cada
+instrumento.
