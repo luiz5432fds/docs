@@ -95,3 +95,23 @@ local take = reaper.MIDIEditor_GetTake(reaper.MIDIEditor_GetActive())
 ```
 
 Combine este script com a exportação de PDF para gerar partituras prontas diretamente do Reaper, dispensando outros editores externos.
+## 8. AI Composition Assistant
+
+A proposta é integrar modelos de IA que ofereçam sugestões de acordes, melodias e até roteiros de peças ou quadrilhas. Bibliotecas Python como **Magenta**, **music21** e **huggingface/transformers** podem ser acionadas via ReaScript para gerar ideias em tempo real. Um painel no Reaper pode exibir opções de harmonização ou letras e, ao aceitar, o script insere o resultado em uma trilha MIDI ou em um bloco de texto.
+
+## 9. Gerador de Corais
+
+Um script em Lua pode duplicar linhas melódicas criando vozes em terças, quintas ou quartas, formando arranjos corais simples. Combine com amostras de coros gratuitos, como o *Free Choir* da Versilian Studios, para obter um som convincente.
+
+## 10. Detecção de BPM e Separador de Stems
+
+Utilize bibliotecas Python como **librosa** ou **madmom** para detectar BPM e marcas de batida. Para separar faixas estéreo em stems, recorra ao projeto open source **Spleeter**. Esses processos podem ser disparados a partir de um script ReaScript que exporta o áudio atual, executa o processamento externo e traz os resultados de volta ao projeto.
+
+## 11. Simulação de Microfones e Amplificadores
+
+A própria comunidade do Reaper oferece JSFX que emulam microfones e cabeçotes de guitarra. Além deles, efeitos gratuitos como **Airwindows** ou o conjunto **Guitarix** (Linux) podem servir de base para criar suas próprias cadeias de amp. Ajuste IRs de caixas para variar o timbre.
+
+## 12. Tratamento e Restauração de Áudio
+
+Para timbragem de bateria gravada em ambientes inadequados, experimente plugins nativos de gate, expansores e equalizadores paramétricos. Em Lua é possível programar algoritmos de *sample replacement* que trocam picos por amostras de melhor qualidade. Para remoção de ruídos, use o JSFX "DeNoise" ou integre bibliotecas como **RNNoise** via scripts externos. Essas rotinas ajudam a restaurar gravações problemáticas sem depender de plugins comerciais.
+
