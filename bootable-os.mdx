@@ -1,0 +1,19 @@
+---
+title: 'Construindo uma Imagem Bootável'
+---
+
+Este documento explica como transformar o projeto **Raspberry Workstation** em um sistema operacional dedicado.
+
+## Visão geral
+
+Utilizaremos o [Buildroot](https://buildroot.org/) para gerar uma distribuição Linux mínima que inicializa diretamente a interface do teclado.
+
+## Passos principais
+
+1. Instale as dependências do Buildroot em um computador Linux.
+2. Execute `scripts/build_image.sh` localizado em `raspi-workstation/` para baixar o Buildroot e gerar a imagem `raspi-workstation.img`.
+3. Grave o arquivo gerado em um cartão SD e insira no Raspberry Pi.
+4. Na primeira inicialização, copie `raspi-workstation.service` para `/etc/systemd/system/` e ative o serviço com `systemctl enable raspi-workstation.service`.
+
+Após esses passos o Pi executará o firmware automaticamente sempre que for ligado, tornando-se um teclado workstation autônomo.
+

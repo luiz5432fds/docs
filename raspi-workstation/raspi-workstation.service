@@ -1,0 +1,13 @@
+[Unit]
+Description=Raspberry Workstation Firmware
+After=network.target sound.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/raspi-workstation/main.py
+WorkingDirectory=/opt/raspi-workstation
+Restart=always
+
+[Install]
+WantedBy=graphical.target
+
