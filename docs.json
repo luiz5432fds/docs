@@ -18,7 +18,10 @@
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "development",
+              "raspberry-workstation",
+              "timbres-hits",
+              "bootable-os"
             ]
           },
           {
