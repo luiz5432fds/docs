@@ -1,0 +1,47 @@
+---
+title: 'Installation Guide'
+description: 'How to download and set up the scripts and docs'
+---
+
+This page explains how to obtain these documentation files and integrate the accompanying Reaper scripts.
+
+## 1. Download the Repository
+
+Clone or download the repository from GitHub:
+
+```bash
+git clone https://github.com/youruser/docs.git
+```
+
+Or download it as a ZIP and extract to a folder on your computer.
+
+## 2. Copy Scripts to Reaper
+
+1. Open **Reaper** and go to *Options > Show REAPER resource path*.
+2. Copy the `Scripts` folder from this repo into that directory.
+3. Restart Reaper so it indexes the new scripts.
+
+## 3. Load Templates and Libraries
+
+- Place the `Templates` or `ProjectTemplates` folders (if present) into your Reaper resource path.
+- Keep sample libraries in any location and update the file paths in the scripts accordingly.
+
+## 4. Running the Documentation Locally
+
+Install the Mintlify CLI and run `mintlify dev` in this folder to view the docs offline:
+
+```bash
+npm install -g mintlify
+mintlify dev
+```
+
+## 5. Packaging Everything
+
+To create a portable package, compress the documentation and scripts:
+
+```bash
+tar -czf reaper-tools.tar.gz docs/ Scripts/ Templates/
+```
+
+Share this archive with other users. They can extract it and follow the steps acima to install.
+
