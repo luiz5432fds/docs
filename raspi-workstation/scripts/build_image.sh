@@ -11,7 +11,7 @@ if [ ! -d "$BUILDROOT_DIR" ]; then
     git clone https://github.com/buildroot/buildroot.git "$BUILDROOT_DIR"
 fi
 
-cp -r $(dirname "$0")/.. "$BUILDROOT_DIR/board/raspi-workstation"
+cp -r "$(dirname "$0")/.." "$BUILDROOT_DIR/board/raspi-workstation"
 
 cd "$BUILDROOT_DIR"
 make raspberrypi_defconfig

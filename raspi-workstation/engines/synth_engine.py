@@ -2,8 +2,10 @@
 
 from typing import Any
 
+from .base import BaseEngine
 
-class SynthEngine:
+
+class SynthEngine(BaseEngine):
     """Motor de síntese simplificado."""
 
     def __init__(self) -> None:

@@ -58,3 +58,7 @@ diretamente no Raspberry Pi. Recomendamos o uso do
    ```
 
 Assim o Raspberry Pi será iniciado como um teclado workstation dedicado.
+
+## Estabilidade e Inspiração
+
+Buscamos alcançar a robustez dos workstations consagrados da Yamaha e da Roland. Este projeto é totalmente open source e não reutiliza código proprietário dessas fabricantes, mas adota práticas observadas em seus sistemas para garantir estabilidade e alta qualidade.

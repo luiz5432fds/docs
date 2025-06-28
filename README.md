@@ -32,3 +32,5 @@ Install our Github App to auto propagate changes from your repo to your deployme
 - Page loads as a 404 - Make sure you are running in a folder with `docs.json`
 
 Este projeto está licenciado sob os termos da licença MIT.
+
+Este projeto fornece exemplos inspirados na estabilidade observada em workstations consagrados da Yamaha e da Roland. Todo o código aqui é original e distribuído sob a licença MIT.
