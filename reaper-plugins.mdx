@@ -115,3 +115,34 @@ A própria comunidade do Reaper oferece JSFX que emulam microfones e cabeçotes 
 
 Para timbragem de bateria gravada em ambientes inadequados, experimente plugins nativos de gate, expansores e equalizadores paramétricos. Em Lua é possível programar algoritmos de *sample replacement* que trocam picos por amostras de melhor qualidade. Para remoção de ruídos, use o JSFX "DeNoise" ou integre bibliotecas como **RNNoise** via scripts externos. Essas rotinas ajudam a restaurar gravações problemáticas sem depender de plugins comerciais.
 
+
+## 13. Jazz Orchestration and Block Chords
+
+Para compor em linguagem de jazz, crie scripts que sugiram **voicings em bloco** para seções de metais e madeiras. Um gerador pode agrupar notas nas terças superiores e manter a melodia na voz principal. Para cada sugestão, o script mostra uma grade de acordes e exporta para MIDI.
+
+```lua
+-- block_voicing.lua
+local chord = {60, 64, 67} -- Cmaj
+for i, n in ipairs(chord) do
+  reaper.MIDI_InsertNote(take, false, false, startppq, endppq, 0, n, 100, false)
+end
+```
+
+Esse exemplo insere um acorde básico; expanda com substituições e extensões de jazz, como 7(9) ou 13.
+
+## 14. Melody and Counterpoint Generator
+
+Utilize bibliotecas como **music21** para gerar melodias a partir de escalas ou motivos. O script analisa a harmonia atual e propõe linhas contrapontísticas, destacando notas proibidas na partitura.
+
+## 15. Groove and Convention Builder
+
+Amplie os grooves de forró com convenções de viradas. O script sorteia variações e marca no arranjo pontos de repetição, criando seções prontas para ensaio.
+
+## 16. Mix Assistant
+
+Crie um JSFX que monitora o espectro e o balanço estéreo, sugerindo equalizações ou regravações se o ruído estiver alto. O plugin exibe dicas em tempo real e pode acionar scripts de ajuste automático.
+
+## 17. Visual Interfaces
+
+Todas as ferramentas acima podem usar os recursos gráficos do JSFX ou bibliotecas Lua para criar **interfaces atrativas**. Modelos generativos de imagem (como Stable Diffusion offline) podem fornecer "skins" personalizadas para cada plugin.
+
