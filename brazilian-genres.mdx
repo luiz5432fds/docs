@@ -13,8 +13,8 @@ This guide expands the educational platform with content specifically about **fo
 - **Gerador de grooves**: mantenha arquivos MIDI de baião e xote em uma pasta. Um script Lua pode inseri-los automaticamente em trilhas específicas.
 
 ```lua
--- forro_groove.lua
-local grooves = {"baiao.mid", "xote.mid"}
+-- forró_groove.lua
+local grooves = {"baião.mid", "xote.mid"}
 for _, file in ipairs(grooves) do
   reaper.InsertMedia(file, 0)
 end
@@ -43,6 +43,12 @@ end
 - **Energia**: mistura de guitarras marcantes com percussão regional.
 - **Samples**: loops de conga, timbal e riffs de guitarra. Mantenha presets de distorção leves.
 - **Grooves**: scripts podem alternar entre levadas rápidas e ritmos de brega, permitindo transições em performances ao vivo.
+
+## Loops de Sanfona
+
+- Reúna levadas de sanfona de forró, xote, baião e sertanejo. Organize arquivos MIDI e gravações em diferentes andamentos.
+- Scripts em Lua podem alternar essas levadas conforme o BPM escolhido.
+- Use o mesmo banco para estilos como arrocha e piseiro, variando apenas a batida de apoio.
 
 ## Integração com Reaper
 

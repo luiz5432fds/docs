@@ -146,3 +146,31 @@ Crie um JSFX que monitora o espectro e o balanço estéreo, sugerindo equalizaç
 
 Todas as ferramentas acima podem usar os recursos gráficos do JSFX ou bibliotecas Lua para criar **interfaces atrativas**. Modelos generativos de imagem (como Stable Diffusion offline) podem fornecer "skins" personalizadas para cada plugin.
 
+
+## 18. Advanced Sampler
+
+Crie um sampler customizado em JSFX que combine a facilidade do **ReaSamplomatic5000** com recursos modernos como mapeamento por arrastar‑e‑soltar, round‑robin automático e filtros de alta qualidade.
+
+```c
+// pseudo-código para inicializar um sample
+load_sample("kick.wav");
+slider1:cutoff=200<20,20000>Filtro
+@slider
+// aplica filtro sem aliasing no buffer
+```
+
+Adicione scripts em Lua para abrir janelas de pré‑escuta e navegar pelas pastas de amostras rapidamente. O objetivo é superar samplers tradicionais em agilidade e simplicidade.
+
+## 19. Critical Music Assistant
+
+Integre um módulo de análise que compare sua mixagem a padrões de mercado usando medições de LUFS, espectro e dinâmica. O script gera relatórios destacando frequências excessivas, faixa dinâmica limitada ou problemas de panorâmica.
+
+```lua
+-- critical_mix.lua
+local lufs = reaper.JS_LUFSMeter_GetLUFS()
+if lufs > -14 then
+  gfx.printf("Nível alto: abaixe o volume em %.1f dB", lufs + 14)
+end
+```
+
+Mostre essas dicas em uma janela flutuante e ofereça a opção de abrir referências sonoras para comparação. Assim você conta com um "ouvido extra" para chegar aos melhores padrões de produção.
