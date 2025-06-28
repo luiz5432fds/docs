@@ -56,9 +56,9 @@ spl1 = spl1 * 10^(gain/20);
 
 Place your measured IR wave files in the `Data` folder and load them using `impulse` functions within JSFX.
 
-## 4. Groove Generators for Forró
+## 4. Groove Generators for Forró and Outros Ritmos
 
-A Lua script can create MIDI grooves based on common patterns from forró e baião. Store rhythmic templates in a table and insert them into the project as MIDI items:
+A Lua script pode produzir grooves de **forró**, **brega**, **piseiro**, **arrocha** e **calypso**. Guarde padrões rítmicos em uma tabela e insira-os em trilhas MIDI do projeto:
 
 ```lua
 local patterns = {
@@ -66,7 +66,7 @@ local patterns = {
   {70, "triangulo.mid"}
 }
 for _, p in ipairs(patterns) do
-  -- load each MIDI file and insert at the play cursor
+  -- carrega cada arquivo e insere no cursor de reprodução
 end
 ```
 
@@ -83,3 +83,15 @@ Use ReaScript to open PDF references on harmony, contraponto and orquestração 
 3. Automate template loading with a script that asks for project type (quadrilha, peça de teatro, coral) and sets up specific routing or track names.
 
 This approach keeps everything native to Reaper while giving flexibility to expand features over time. Each component—mastering chain, vocal tuning, room simulation, groove generation and educational helpers—can be gradually improved with more advanced JSFX coding and Python logic for AI assistance.
+
+## 7. Notation Editor (MuseScore Features)
+
+Reaper possui uma visualização de notação integrada, mas é possível estender suas funcionalidades para lembrar o MuseScore. Use scripts em Lua para adicionar atalhos de inserção de dinâmica e articulação. A automação de volume pode ser vinculada às marcas de crescendo e decrescendo:
+
+```lua
+-- dynamic_to_volume.lua
+local take = reaper.MIDIEditor_GetTake(reaper.MIDIEditor_GetActive())
+-- analisa textos "<" ou ">" e cria envelopes correspondentes
+```
+
+Combine este script com a exportação de PDF para gerar partituras prontas diretamente do Reaper, dispensando outros editores externos.

@@ -1,0 +1,53 @@
+---
+title: 'Brazilian Genres Toolkit'
+description: 'Composition tips and sample resources for forró, brega, piseiro, arrocha and calypso'
+---
+
+This guide expands the educational platform with content specifically about **forró**, **brega**, **piseiro**, **arrocha** and **calypso**. Each section highlights common arranging techniques and suggests how to build sample libraries and groove tools directly in **Reaper**.
+
+## Forró
+
+- **Instrumentação típica**: sanfona, zabumba, triângulo e baixo.
+- **Dicas de composição**: use linhas de baixo sincopadas com o triângulo em contratempo. Combine progressões simples (I–IV–V) com variações rítmicas.
+- **Samples**: grave seus próprios loops ou procure coleções gratuitas voltadas a ritmos nordestinos. Organize tudo no *Media Explorer* do Reaper.
+- **Gerador de grooves**: mantenha arquivos MIDI de baião e xote em uma pasta. Um script Lua pode inseri-los automaticamente em trilhas específicas.
+
+```lua
+-- forro_groove.lua
+local grooves = {"baiao.mid", "xote.mid"}
+for _, file in ipairs(grooves) do
+  reaper.InsertMedia(file, 0)
+end
+```
+
+## Brega
+
+- **Características**: melodias emotivas com arranjos de cordas e metais leves.
+- **Samples**: combine sintetizadores e timbres orquestrais suaves. Mantenha presets personalizados para "rasgado" ou "romântico".
+- **Automação**: utilize envelopes de volume para enfatizar frases vocais, programando curvas via ReaScript.
+
+## Piseiro
+
+- **Ritmo**: batidas eletrônicas simples, geralmente em 4/4 com BPM elevado.
+- **Samples**: crie kits de percussão eletrônica e leads de teclado. Organize um template com faixas de percussão, baixo e efeitos.
+- **Lua**: scripts podem alternar padrões de caixas e tambores, gerando variações a cada compasso.
+
+## Arrocha
+
+- **Harmonia**: progressões lentas, uso frequente de teclado e violão.
+- **Samples**: timbres de acordeon, guitarras limpas e bateria acústica com ritmos balanceados.
+- **Dicas**: utilize automação de *time stretch* para preencher espaços entre frases vocais.
+
+## Calypso
+
+- **Energia**: mistura de guitarras marcantes com percussão regional.
+- **Samples**: loops de conga, timbal e riffs de guitarra. Mantenha presets de distorção leves.
+- **Grooves**: scripts podem alternar entre levadas rápidas e ritmos de brega, permitindo transições em performances ao vivo.
+
+## Integração com Reaper
+
+1. Crie **track templates** separados para cada estilo acima. Inclua roteamento de efeitos, nomes de trilhas e marcadores de formatação.
+2. Use scripts em Lua ou Python para carregar o template correto e importar os samples desejados.
+3. Combine essas ferramentas com o editor de partituras descrito na seção de plugins para registrar arranjos e gerar partituras PDF.
+
+Esses recursos deixam o Reaper pronto para produções brasileiras sem depender de plugins externos.
