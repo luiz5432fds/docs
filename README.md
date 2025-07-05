@@ -42,3 +42,19 @@ python app.py
 ```
 
 Acesse `http://localhost:5000` no navegador. Configure a variável de ambiente `OPENAI_API_KEY` para obter respostas reais do modelo da OpenAI.
+
+### Requisitos de Python
+
+Certifique-se de ter o **Python 3.8 ou superior** instalado. Verifique com `python3 --version`.
+
+### Configurando a chave da OpenAI
+
+Defina a variável de ambiente `OPENAI_API_KEY` antes de iniciar a aplicação. Em sistemas Unix use:
+
+```bash
+export OPENAI_API_KEY=sk-sua-chave
+```
+
+No Windows utilize `set OPENAI_API_KEY=<sua-chave>` ou $env:OPENAI_API_KEY="<sua-chave>" no PowerShell.
+
+A chave precisa estar disponível no ambiente onde `python app.py` será executado.
