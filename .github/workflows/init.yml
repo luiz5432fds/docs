@@ -1,0 +1,55 @@
+name: Initial Project Setup
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create project structure
+        run: |
+          mkdir -p docs ml/src ml/data api frontend reaper-scripts infra ci-cd
+          cat << 'EOF' > README.md
+# Estúdio Tutor de Performance e Produção Musical
+Projeto unificado de transcrição, feedback e mixagem inteligente.
+EOF
+          git add .
+          git commit -m "chore: create project structure and README"
+          git push
+
+      - name: Create initial issues
+        uses: peter-evans/create-issue@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issues: |
+            title: "Documentar requisitos e métricas"
+            body: |
+              - Escrever o documento de requisitos (docs/requisitos.md).
+              - Definir e formalizar métricas de sucesso (acurácia, latência, uptime, etc.).
+            labels: documentation, planning
+            ---
+            title: "Estruturar repositório"
+            body: |
+              - Criar pastas e arquivos iniciais conforme a árvore de diretórios.
+              - Incluir README.md com visão geral do projeto.
+            labels: setup, repository
+            ---
+            title: "Configurar CI/CD com GitHub Actions"
+            body: |
+              - Workflow para linting, testes unitários e build de Docker images.
+              - Integração com Dependabot/Snyk para checagem de dependências.
+            labels: ci/cd, devops
+            ---
+            title: "Agendar reunião de kick-off"
+            body: |
+              - Propor horários e canal (Zoom/Meet).
+              - Convidar todos os stakeholders.
+            labels: planning, meeting
