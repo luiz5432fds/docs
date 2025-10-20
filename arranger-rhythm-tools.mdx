@@ -1,0 +1,66 @@
+---
+title: 'Arranger Rhythm Tools'
+description: 'Building and converting MIDI grooves for arranger keyboards'
+---
+
+This guide outlines how to craft rhythm styles in **Reaper** and convert them for popular arranger keyboards such as those from Yamaha, Korg and Roland. The goal is to keep the workflow inside Reaper using Lua or Python scripts.
+
+## 1. Creating Patterns in Reaper
+
+1. Program your drum and accompaniment parts on separate MIDI tracks.
+2. Keep each instrument on its own MIDI channel so style converters can map parts correctly.
+3. Save short sections like intro, main, fill and ending as individual items or regions.
+
+A simple Lua script can export each region to a temporary MIDI file:
+
+```lua
+-- export_regions.lua
+local _, num = reaper.CountProjectMarkers(0)
+for i = 0, num-1 do
+  local retval, isrgn, pos, endpos, name = reaper.EnumProjectMarkers(i)
+  if isrgn then
+    reaper.Main_OnCommand(40240, 0) -- select region
+    reaper.Main_OnCommand(40041, 0) -- export selected MIDI
+  end
+end
+```
+
+Use this script to quickly generate the pieces needed for a style file.
+
+## 2. Converting MIDI to Arranger Formats
+
+After exporting the MIDI sections, you can convert them to the proprietary rhythm formats used by each keyboard. Many open‑source utilities parse MIDI and repackage the data:
+
+- **yamaha_style_maker** – converts separate MIDI parts into `.sty` files for PSR and Tyros.
+- **korgtools** – community scripts that build Korg styles (`.sty`) from MIDI patterns.
+- **style_dumper** – reads and writes Roland style chunks.
+
+If no ready‑made tool is available, a Python script can assemble the style structure by following manufacturer documentation. The basic steps are:
+
+1. Read the MIDI files and extract note and controller data per channel.
+2. Insert this data into the header/layout required by the target keyboard.
+3. Save the resulting binary as the appropriate style extension.
+
+```python
+# pseudocode for MIDI to style
+import mido
+# load midi parts, map to style sections
+# write header bytes and merge tracks
+with open('mysong.sty', 'wb') as out:
+    out.write(header_bytes)
+    out.write(pattern_data)
+```
+
+## 3. Using Styles on Different Keyboards
+
+Because each brand uses a distinct file layout, you might need to maintain multiple export scripts. The workflow generally is:
+
+1. Compose and edit everything in Reaper.
+2. Run your conversion script choosing the desired keyboard format.
+3. Copy the generated style file to a USB drive and load it in the keyboard.
+
+By automating the export and conversion steps, you can reuse the same MIDI grooves across Yamaha, Korg, Roland or other arrangers without repeating the manual editing.
+
+---
+
+With these tools, Reaper becomes a central hub for designing custom rhythms and deploying them to any arranger keyboard.
