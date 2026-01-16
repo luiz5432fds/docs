@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "note": "Program 001-128 corresponds to Program Change 000-127. Preserve order from MM8 voice list.",
+  "entries": [
+    { "category": "PIANO", "name": "Power Grand", "msb": 0, "lsb": 112, "program": 0 },
+    { "category": "PIANO", "name": "Natural Grand", "msb": 0, "lsb": 112, "program": 1 },
+    { "category": "KEYBOARD/ORGAN", "name": "Cool! Vintage Organ", "msb": 0, "lsb": 112, "program": 16 },
+    { "category": "GUITAR/BASS", "name": "Mega! SteelGuitar", "msb": 0, "lsb": 112, "program": 24 },
+    { "category": "STRINGS", "name": "Warm Strings", "msb": 0, "lsb": 112, "program": 48 },
+    { "category": "BRASS", "name": "Brass Section", "msb": 0, "lsb": 112, "program": 56 },
+    { "category": "SYNTH LEAD/PAD", "name": "Analog Lead", "msb": 0, "lsb": 112, "program": 64 },
+    { "category": "DRUM/PERC/SE", "name": "Standard Kit", "msb": 127, "lsb": 0, "program": 0 },
+    { "category": "ETHNIC", "name": "Sitar", "msb": 0, "lsb": 112, "program": 104 },
+    { "category": "GM", "name": "GM Piano", "msb": 0, "lsb": 0, "program": 0 }
+  ]
+}

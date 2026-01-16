@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "Demo Orchestral Split",
+  "tempo": 90,
+  "notes": "Split/layer example. If you have KORG Triton or orchestral libraries, assign them here.",
+  "parts": [
+    { "slot": 1, "name": "Strings High", "keyRange": "C3-G9", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 1 },
+    { "slot": 2, "name": "Brass Mid", "keyRange": "E2-C5", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 2 },
+    { "slot": 3, "name": "Cello Low", "keyRange": "A0-D3", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 3 }
+  ]
+}

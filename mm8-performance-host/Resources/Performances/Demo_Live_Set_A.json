@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "Demo Live Set A",
+  "tempo": 120,
+  "notes": "Placeholder performance. Swap in your plugins/presets.",
+  "parts": [
+    { "slot": 1, "name": "Piano", "plugin": "(choose)", "program": "(choose)", "midiChannelIn": "Omni", "midiChannelOut": 1 },
+    { "slot": 2, "name": "Strings", "plugin": "(choose)", "program": "(choose)", "midiChannelIn": "Omni", "midiChannelOut": 2 },
+    { "slot": 3, "name": "Pad", "plugin": "(choose)", "program": "(choose)", "midiChannelIn": "Omni", "midiChannelOut": 3 }
+  ]
+}
