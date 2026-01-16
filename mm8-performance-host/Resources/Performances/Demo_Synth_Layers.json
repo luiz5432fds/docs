@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "Demo Synth Layers",
+  "tempo": 128,
+  "notes": "Layered synth stack. Assign any VST3 synths you own.",
+  "parts": [
+    { "slot": 1, "name": "Poly Lead", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 1 },
+    { "slot": 2, "name": "Analog Pad", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 2 },
+    { "slot": 3, "name": "Sub Bass", "plugin": "(choose)", "program": "(choose)", "midiChannelOut": 3 }
+  ]
+}
