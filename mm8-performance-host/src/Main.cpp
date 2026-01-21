@@ -1,11 +1,11 @@
 #include <juce_gui_extra/juce_gui_extra.h>
-#include "MainComponent.h"
+#include "ui/MainComponent.h"
 
-class MM8XPSPerformanceManagerApplication final : public juce::JUCEApplication
+class MM8WorkstationPerformanceHostApplication final : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "MM8-XPS Performance Manager"; }
-    const juce::String getApplicationVersion() override { return "0.2.0"; }
+    const juce::String getApplicationName() override { return "MM8 Workstation Performance Host"; }
+    const juce::String getApplicationVersion() override { return "1.0.0"; }
     bool moreThanOneInstanceAllowed() override { return true; }
 
     void initialise(const juce::String&) override
@@ -53,4 +53,4 @@ private:
     std::unique_ptr<MainWindow> mainWindow;
 };
 
-START_JUCE_APPLICATION(MM8XPSPerformanceManagerApplication)
+START_JUCE_APPLICATION(MM8WorkstationPerformanceHostApplication)

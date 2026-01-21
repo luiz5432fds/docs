@@ -45,17 +45,17 @@ if (-not (Test-Path -LiteralPath $vsDevCmd)) {
 }
 
 $configure = "cmake -S `"$root`" -B `"$buildDir`" -G `"Visual Studio 17 2022`" -A x64 -DJUCE_DIR=`"$juceDirResolved`""
-$build = "cmake --build `"$buildDir`" --config Release"
+$build = "cmake --build `"$buildDir`" --config Debug"
 cmd /c "`"$vsDevCmd`" -no_logo -arch=amd64 && $configure && $build"
 
-$artifactDir = Join-Path $buildDir "MM8WorkstationPerformanceHostApp_artefacts/Release"
+$artifactDir = Join-Path $buildDir "MM8WorkstationPerformanceHostApp_artefacts/Debug"
 if (-not (Test-Path (Join-Path $artifactDir $appName))) {
     $exe = Get-ChildItem -Path $buildDir -Filter *.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($exe) {
-        Write-Host "Release build completed: $($exe.FullName)"
+        Write-Host "Debug build completed: $($exe.FullName)"
         return
     }
     throw "Build artifact not found under $artifactDir"
 }
 
-Write-Host "Release build completed: $artifactDir\$appName"
+Write-Host "Debug build completed: $artifactDir\$appName"

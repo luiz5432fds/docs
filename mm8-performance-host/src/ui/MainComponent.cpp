@@ -5,6 +5,8 @@ MainComponent::MainComponent()
     setLookAndFeel(&lookAndFeel);
     setSize(1200, 720);
 
+    appState.initialise();
+
     performanceName.setText("Performance: INIT", juce::dontSendNotification);
     performanceName.setJustificationType(juce::Justification::centredLeft);
 
@@ -14,7 +16,7 @@ MainComponent::MainComponent()
     bpmLabel.setText("BPM 120", juce::dontSendNotification);
     bpmLabel.setJustificationType(juce::Justification::centred);
 
-    statusLabel.setText("Audio: 48kHz • Buffer 256 • CPU 3% • Latency 9.3ms", juce::dontSendNotification);
+    statusLabel.setText("Audio: Initialising...", juce::dontSendNotification);
     statusLabel.setJustificationType(juce::Justification::centredRight);
 
     searchBox.setTextToShowWhenEmpty("Search programs", juce::Colours::grey);
@@ -34,26 +36,17 @@ MainComponent::MainComponent()
     configureKnob(knob4);
 
     for (auto* child : { &performanceName, &sceneLabel, &bpmLabel, &statusLabel, &partsGrid, &bankSelector,
-                         &programList, &searchBox, &performanceButton, &bankButton,
-                         &programButton, &mixerButton, &setlistButton, &midiMonitorButton,
-                         &knob1, &knob2, &knob3, &knob4 })
+                         &programList, &searchBox, &performanceButton, &bankButton, &enginesButton, &presetsButton,
+                         &midiButton, &audioButton, &settingsButton, &knob1, &knob2, &knob3, &knob4 })
     {
         addAndMakeVisible(child);
     }
 
-    scanner.setDefaultPluginFolders();
-    config.load();
-    if (config.needsAutoConfig())
-    {
-        engine.autoConfigureIfNeeded();
-        config.markConfigured();
-        config.save();
-    }
-    store.loadFromDisk();
-    engine.setPerformance(store.getActivePerformance());
-    partsGrid.setParts(engine.getPerformance().parts);
-    performanceName.setText("Performance: " + engine.getPerformance().name, juce::dontSendNotification);
-    sceneLabel.setText("Scene " + engine.getPerformance().scene, juce::dontSendNotification);
+    runAutoConfiguration();
+    appState.getPerformanceEngine().setPerformance(appState.getPerformanceStore().getActivePerformance());
+    partsGrid.setParts(appState.getPerformanceEngine().getPerformance().parts);
+    performanceName.setText("Performance: " + appState.getPerformanceEngine().getPerformance().name, juce::dontSendNotification);
+    sceneLabel.setText("Scene " + appState.getPerformanceEngine().getPerformance().scene, juce::dontSendNotification);
     refreshStatusText();
 }
 
@@ -100,18 +93,19 @@ void MainComponent::resized()
     knob4.setBounds(knobsArea.removeFromLeft(knobWidth).reduced(8, 0));
 
     auto buttonArea = footer.reduced(8, 0);
-    auto buttonWidth = buttonArea.getWidth() / 6;
+    auto buttonWidth = buttonArea.getWidth() / 7;
     performanceButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
     bankButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
-    programButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
-    mixerButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
-    setlistButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
-    midiMonitorButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
+    enginesButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
+    presetsButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
+    midiButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
+    audioButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
+    settingsButton.setBounds(buttonArea.removeFromLeft(buttonWidth).reduced(4));
 }
 
 void MainComponent::refreshStatusText()
 {
-    const auto deviceStatus = engine.describeAudioStatus();
+    const auto deviceStatus = appState.getPerformanceEngine().describeAudioStatus();
     statusLabel.setText(deviceStatus, juce::dontSendNotification);
 }
 
@@ -127,4 +121,43 @@ void MainComponent::refreshFactoryBrowser()
         bankSelector.addItem(category, itemId++);
 
     bankSelector.setSelectedId(1);
+}
+
+void MainComponent::runAutoConfiguration()
+{
+    auto& settings = appState.getSettings();
+
+    pluginScanner.loadPluginPaths(juce::File::getCurrentWorkingDirectory().getChildFile("config").getChildFile("plugin_paths.json"));
+    auto engines = pluginScanner.scan(appState.getPersistence().getPluginCacheFile(), false);
+    engineRegistry.updateFromCache(engines);
+
+    presetIndex.setEntries(presetScanner.scan());
+    presetIndex.save(appState.getPersistence().getPresetIndexFile());
+
+    midiDeviceManager.autoDetectPrimaryController();
+    configureControllerMappings(midiDeviceManager.getDetectedDeviceName());
+
+    if (settings.needsAutoConfig())
+    {
+        appState.getPerformanceEngine().autoConfigureIfNeeded(settings);
+        settings.save();
+    }
+    else
+    {
+        appState.getPerformanceEngine().applySettings(settings);
+    }
+}
+
+void MainComponent::configureControllerMappings(const juce::String& deviceName)
+{
+    auto lowerName = deviceName.toLowerCase();
+    if (lowerName.contains("xps") || lowerName.contains("roland"))
+    {
+        mm8::XPS10Profile profile;
+        mappingEngine.setMappings(profile.getMappings());
+        return;
+    }
+
+    mm8::MM8Profile profile;
+    mappingEngine.setMappings(profile.getMappings());
 }
