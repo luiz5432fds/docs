@@ -21,11 +21,23 @@ void PluginScanner::loadPluginPaths(const juce::File& configFile)
     auto json = juce::JSON::parse(configFile);
     auto* array = json.getArray();
     if (!array)
+    {
+        Logger::get().log("Plugin paths config invalid. Falling back to defaults.");
+        searchPath = defaultPluginPaths();
+        writeDefaultPluginConfig(configFile);
         return;
+    }
 
     searchPath = {};
     for (const auto& item : *array)
         searchPath.add(juce::File(item.toString()));
+
+    if (searchPath.getNumPaths() == 0)
+    {
+        Logger::get().log("Plugin paths config empty. Falling back to defaults.");
+        searchPath = defaultPluginPaths();
+        writeDefaultPluginConfig(configFile);
+    }
 }
 
 void PluginScanner::setPluginPaths(const juce::FileSearchPath& paths)
