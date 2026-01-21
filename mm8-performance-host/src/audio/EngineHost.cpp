@@ -14,13 +14,20 @@ void EngineHost::setSampleRate(double sampleRate, int bufferSize)
 {
     currentSampleRate = sampleRate;
     currentBufferSize = bufferSize;
+
+    for (auto* instance : layerInstances)
+    {
+        if (instance != nullptr)
+            instance->prepareToPlay(currentSampleRate, currentBufferSize);
+    }
 }
 
 void EngineHost::setPerformance(const Performance& performance)
 {
+    const juce::ScopedLock sl(processLock);
     for (size_t index = 0; index < performance.parts.size(); ++index)
     {
-        if (!performance.parts[index].enabled)
+        if (!performance.parts[index].enabled && layerInstances[static_cast<int>(index)] != nullptr)
             clearLayer(static_cast<int>(index));
     }
 }
@@ -49,6 +56,7 @@ bool EngineHost::loadEngineForLayer(int layerIndex, const juce::PluginDescriptio
         return false;
 
     instance->prepareToPlay(currentSampleRate, currentBufferSize);
+    const juce::ScopedLock sl(processLock);
     layerInstances.set(layerIndex, instance.release());
     return true;
 }

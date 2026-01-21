@@ -24,5 +24,6 @@ private:
     juce::OwnedArray<juce::AudioPluginInstance> layerInstances;
     double currentSampleRate = 48000.0;
     int currentBufferSize = 256;
+    juce::CriticalSection processLock;
 };
 } // namespace mm8

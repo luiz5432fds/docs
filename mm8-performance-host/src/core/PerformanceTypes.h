@@ -6,14 +6,14 @@ namespace mm8
 {
 struct PartState
 {
-    bool enabled = true;
-    juce::String pluginRef { "None" };
-    juce::String presetRef { "Init" };
-    int midiChannelIn = 1;
+    bool enabled = false;
+    juce::String pluginRef;
+    juce::String presetRef;
+    int midiChannelIn = 0;
     int midiChannelOut = 1;
     int keyLow = 0;
     int keyHigh = 127;
-    int velocityLow = 1;
+    int velocityLow = 0;
     int velocityHigh = 127;
     int transpose = 0;
     juce::String velocityCurve { "Linear" };
@@ -21,15 +21,15 @@ struct PartState
     bool modEnabled = true;
     bool pitchEnabled = true;
     bool aftertouchEnabled = true;
-    float volume = 0.8f;
+    float volume = 1.0f;
     float pan = 0.0f;
-    juce::String name { "Part" };
-    juce::String program { "Init" };
+    juce::String name;
+    juce::String program;
 };
 
 struct Performance
 {
-    juce::String name { "Init Performance" };
+    juce::String name;
     juce::String tempo { "120" };
     juce::String scene { "A" };
     std::vector<PartState> parts { 16 };
