@@ -7,7 +7,9 @@ juce::String PresetRules::categoryForPath(const juce::File& file)
     auto path = file.getFullPathName().toLowerCase();
     auto name = file.getFileNameWithoutExtension().toLowerCase();
 
-    if ((path.contains("grand") && path.contains("piano")) || path.contains("upright"))
+    if (path.contains("grand") && path.contains("piano"))
+        return "Piano";
+    if (path.contains("upright"))
         return "Piano";
     if (path.contains("epiano") || path.contains("e.piano") || path.contains("rhodes") || path.contains("wurli") || path.contains("clav"))
         return "E.Piano";
@@ -41,7 +43,7 @@ juce::String PresetRules::categoryForPath(const juce::File& file)
     if (path.contains("mallet") || path.contains("bell") || path.contains("marimba") || path.contains("vibes"))
         return "Chromatic Perc";
 
-    if (path.contains("fx") || path.contains("effect") || name.contains("fx"))
+    if (path.contains("fx") || path.contains("effect"))
         return "FX";
 
     return "Synth";
@@ -56,7 +58,7 @@ bool PresetRules::shouldIgnoreFile(const juce::File& file)
         return true;
 
     auto ext = file.getFileExtension().toLowerCase();
-    if (ext == ".txt" || ext == ".pdf" || ext == ".jpg" || ext == ".png" || ext == ".xml")
+    if (ext == ".txt" || ext == ".pdf" || ext == ".jpg" || ext == ".png" || ext == ".xml" || ext == ".nkc" || ext == ".nkx")
         return true;
 
     return false;

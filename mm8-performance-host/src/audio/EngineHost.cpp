@@ -12,6 +12,7 @@ EngineHost::EngineHost()
 
 void EngineHost::setSampleRate(double sampleRate, int bufferSize)
 {
+    const juce::ScopedLock sl(processLock);
     currentSampleRate = sampleRate;
     currentBufferSize = bufferSize;
 
