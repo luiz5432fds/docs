@@ -5,7 +5,6 @@ namespace mm8
 juce::String PresetRules::categoryForPath(const juce::File& file)
 {
     auto path = file.getFullPathName().toLowerCase();
-    auto name = file.getFileNameWithoutExtension().toLowerCase();
 
     if (path.contains("piano") || path.contains("grand"))
         return "Piano";
