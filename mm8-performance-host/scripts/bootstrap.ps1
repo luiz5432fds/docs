@@ -11,7 +11,7 @@ Write-Host "- Ensure CMake 3.21+"
 Write-Host "- Ensure JUCE 7+ (set JUCE_DIR environment variable)"
 Write-Host "- Ensure Inno Setup 6 (for installer packaging)"
 
-$vswherePath = Join-Path $env:ProgramFiles(x86) "Microsoft Visual Studio/Installer/vswhere.exe"
+$vswherePath = Join-Path $env:ProgramFiles(x86) "Microsoft Visual Studio\Installer\vswhere.exe"
 if (-not (Test-Path -LiteralPath $vswherePath)) {
     throw "vswhere.exe not found at $vswherePath. Install Visual Studio Build Tools 2022."
 }
@@ -21,7 +21,7 @@ if (-not $JuceDir) {
 }
 
 if (-not $JuceDir) {
-    $depsDir = Join-Path $PSScriptRoot "..\\deps"
+    $depsDir = Join-Path $PSScriptRoot "..\deps"
     if (-not (Test-Path -LiteralPath $depsDir)) {
         New-Item -ItemType Directory -Path $depsDir | Out-Null
     }
@@ -67,8 +67,9 @@ if (-not (Test-Path -LiteralPath $juceModules) -or -not (Test-Path -LiteralPath 
 }
 
 Write-Host "JUCE_DIR validated: $juceDirNormalized"
-Write-Host "Set JUCE_DIR with: setx JUCE_DIR `"$juceDirNormalized`""
 $env:JUCE_DIR = $juceDirNormalized
+[System.Environment]::SetEnvironmentVariable("JUCE_DIR", $juceDirNormalized, [System.EnvironmentVariableTarget]::User)
+Write-Host "Set JUCE_DIR with: setx JUCE_DIR `"$juceDirNormalized`""
 if ($env:GITHUB_ENV) {
     Add-Content -LiteralPath $env:GITHUB_ENV "JUCE_DIR=$juceDirNormalized"
 }

@@ -10,7 +10,7 @@
 
 - Instale o workload **Desktop development with C++** (Build Tools ou Community).
 - Garanta que o `vswhere.exe` exista em `C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe`.
-- Se ainda falhar, execute o build pelo **Developer Command Prompt for VS 2022**.
+- O `build_release.ps1` chama automaticamente o `VsDevCmd.bat`; não é necessário abrir o Developer Command Prompt manualmente.
 
 ## VST2 não aparece
 

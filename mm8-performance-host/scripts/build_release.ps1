@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $buildDir = Join-Path $root "build"
-$appName = "MM8WorkstationPerformanceHostApp.exe"
+$appName = "MM8 Performance Host.exe"
 $juceDir = $env:JUCE_DIR
 
 if (-not $juceDir) {
@@ -29,7 +29,7 @@ if (-not (Test-Path -LiteralPath $juceModules) -or -not (Test-Path -LiteralPath 
     throw "JUCE_DIR is invalid: $juceDirResolved"
 }
 
-$vswherePath = Join-Path $env:ProgramFiles(x86) "Microsoft Visual Studio/Installer/vswhere.exe"
+$vswherePath = Join-Path $env:ProgramFiles(x86) "Microsoft Visual Studio\Installer\vswhere.exe"
 if (-not (Test-Path -LiteralPath $vswherePath)) {
     throw "vswhere.exe not found at $vswherePath. Install Visual Studio Build Tools 2022."
 }
@@ -39,16 +39,16 @@ if (-not $vsInstall) {
     throw "Visual Studio 2022 Build Tools not found. Install the Desktop development with C++ workload."
 }
 
-$vsDevCmd = Join-Path $vsInstall "Common7/Tools/VsDevCmd.bat"
+$vsDevCmd = Join-Path $vsInstall "Common7\Tools\VsDevCmd.bat"
 if (-not (Test-Path -LiteralPath $vsDevCmd)) {
     throw "VsDevCmd.bat not found at $vsDevCmd"
 }
 
 $configure = "cmake -S `"$root`" -B `"$buildDir`" -G `"Visual Studio 17 2022`" -A x64 -DJUCE_DIR=`"$juceDirResolved`""
 $build = "cmake --build `"$buildDir`" --config Release"
-cmd /c "`"$vsDevCmd`" -no_logo -arch=amd64 && $configure && $build"
+cmd /c "`"$vsDevCmd`" -no_logo -arch=x64 -host_arch=x64 && $configure && $build"
 
-$artifactDir = Join-Path $buildDir "MM8WorkstationPerformanceHostApp_artefacts/Release"
+$artifactDir = Join-Path $buildDir "MM8WorkstationPerformanceHost_artefacts/Release"
 if (-not (Test-Path (Join-Path $artifactDir $appName))) {
     $exe = Get-ChildItem -Path $buildDir -Filter *.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($exe) {

@@ -12,12 +12,12 @@ endif()
 
 add_subdirectory(${JUCE_DIR} juce)
 
-juce_add_gui_app(MM8WorkstationPerformanceHostApp
-    PRODUCT_NAME "MM8 Workstation Performance Host"
+juce_add_gui_app(MM8WorkstationPerformanceHost
+    PRODUCT_NAME "MM8 Performance Host"
     COMPANY_NAME "MM8 Tools"
 )
 
-juce_generate_juce_header(MM8WorkstationPerformanceHostApp)
+juce_generate_juce_header(MM8WorkstationPerformanceHost)
 
 set(APP_SOURCES
     src/Main.cpp
@@ -82,7 +82,7 @@ set(APP_SOURCES
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${APP_SOURCES})
 
-target_sources(MM8WorkstationPerformanceHostApp PRIVATE ${APP_SOURCES})
+target_sources(MM8WorkstationPerformanceHost PRIVATE ${APP_SOURCES})
 
 juce_add_binary_data(MM8WorkstationPerformanceHostResources
     SOURCES
@@ -90,22 +90,24 @@ juce_add_binary_data(MM8WorkstationPerformanceHostResources
         Resources/mm8-factory-order.json
 )
 
-target_compile_definitions(MM8WorkstationPerformanceHostApp PRIVATE
+target_compile_definitions(MM8WorkstationPerformanceHost PRIVATE
     JUCE_DISPLAY_SPLASH_SCREEN=0
     JUCE_USE_CURL=0
     JUCE_WEB_BROWSER=0
     JUCE_PLUGINHOST_VST3=1
     JUCE_PLUGINHOST_AU=0
     JUCE_PLUGINHOST_LV2=0
+    JUCE_PLUGINHOST_VST=0
+    JUCE_ASIO=1
 )
 
 if (JUCE_VST2_SDK_PATH)
-    target_compile_definitions(MM8WorkstationPerformanceHostApp PRIVATE
+    target_compile_definitions(MM8WorkstationPerformanceHost PRIVATE
         JUCE_PLUGINHOST_VST=1
     )
 endif()
 
-target_link_libraries(MM8WorkstationPerformanceHostApp PRIVATE
+target_link_libraries(MM8WorkstationPerformanceHost PRIVATE
     juce::juce_audio_utils
     juce::juce_audio_processors
     juce::juce_audio_devices

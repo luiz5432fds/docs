@@ -23,6 +23,8 @@ cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DJUCE_DIR=C:/dev/JUCE
 cmake --build build --config Release
 ```
 
+O `build_release.ps1` detecta automaticamente o VS 2022 via `vswhere` e não exige abrir o Developer Command Prompt manualmente.
+
 O executável estará em `build/MM8WorkstationPerformanceHostApp_artefacts/Release`.
 
 ## Instalador (Inno Setup)
