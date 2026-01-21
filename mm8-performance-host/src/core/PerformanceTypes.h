@@ -17,11 +17,6 @@ struct PartState
     int velocityLow = 0;
     int velocityHigh = 127;
     int transpose = 0;
-    juce::String velocityCurve { "Linear" };
-    bool sustainEnabled = true;
-    bool modEnabled = true;
-    bool pitchEnabled = true;
-    bool aftertouchEnabled = true;
     float volume = 1.0f;
     float pan = 0.0f;
     juce::String name;
@@ -30,9 +25,9 @@ struct PartState
 
 struct Performance
 {
-    juce::String name;
-    juce::String tempo { "120" };
-    juce::String scene { "A" };
-    std::vector<PartState> parts { 16 };
+    juce::String name = "Init Performance";
+    juce::String tempo = "120.0";
+    juce::String scene = "A";
+    std::vector<PartState> parts;
 };
 } // namespace mm8

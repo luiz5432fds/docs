@@ -7,44 +7,26 @@ juce::String PresetRules::categoryForPath(const juce::File& file)
     auto path = file.getFullPathName().toLowerCase();
     auto name = file.getFileNameWithoutExtension().toLowerCase();
 
-    if (path.contains("grand") && path.contains("piano"))
+    if (path.contains("piano") || path.contains("grand"))
         return "Piano";
-    if (path.contains("upright"))
-        return "Piano";
-    if (path.contains("epiano") || path.contains("e.piano") || path.contains("rhodes") || path.contains("wurli") || path.contains("clav"))
+    if (path.contains("epiano") || path.contains("rhodes") || path.contains("wurli"))
         return "E.Piano";
-
-    if (path.contains("organ") || path.contains("b3") || path.contains("hammond") || path.contains("vox") || path.contains("farfisa"))
+    if (path.contains("organ") || path.contains("b3") || path.contains("hammond"))
         return "Organ";
-
-    if (path.contains("string") || path.contains("orchestra") || path.contains("violin") || path.contains("cello"))
+    if (path.contains("string") || path.contains("orchestra") || path.contains("cello"))
         return "Strings";
-
-    if (path.contains("brass") || path.contains("trumpet") || path.contains("sax") || path.contains("horn"))
+    if (path.contains("brass") || path.contains("sax") || path.contains("trumpet"))
         return "Brass";
-    if (path.contains("flute") || path.contains("clarinet") || path.contains("oboe") || path.contains("woodwind"))
-        return "Woodwind";
-
     if (path.contains("guitar") && !path.contains("bass"))
         return "Guitar";
-    if (path.contains("bass") && !path.contains("drum"))
+    if (path.contains("bass"))
         return "Bass";
-
-    if (path.contains("pad") || path.contains("atmosphere") || path.contains("drone"))
+    if (path.contains("pad") || path.contains("atmosphere"))
         return "Synth Pad";
     if (path.contains("lead") || path.contains("solo"))
         return "Synth Lead";
-    if (path.contains("arp") || path.contains("seq") || path.contains("puls"))
-        return "Synth Comp";
-
-    if (path.contains("drum") || path.contains("perc") || path.contains("kit") || path.contains("beat"))
+    if (path.contains("drum") || path.contains("perc") || path.contains("kit"))
         return "Drums";
-
-    if (path.contains("mallet") || path.contains("bell") || path.contains("marimba") || path.contains("vibes"))
-        return "Chromatic Perc";
-
-    if (path.contains("fx") || path.contains("effect"))
-        return "FX";
 
     return "Synth";
 }
@@ -58,7 +40,7 @@ bool PresetRules::shouldIgnoreFile(const juce::File& file)
         return true;
 
     auto ext = file.getFileExtension().toLowerCase();
-    if (ext == ".txt" || ext == ".pdf" || ext == ".jpg" || ext == ".png" || ext == ".xml" || ext == ".nkc" || ext == ".nkx")
+    if (ext == ".txt" || ext == ".pdf" || ext == ".jpg" || ext == ".png" || ext == ".html")
         return true;
 
     return false;
