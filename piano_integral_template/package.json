@@ -1,0 +1,26 @@
+{
+  "name": "piano-integral-app",
+  "version": "1.0.0",
+  "main": "desktop_build/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "cd frontend && npm install && npm run build",
+    "pack": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.pianointegral.app",
+    "productName": "Piano Integral",
+    "win": {
+      "target": "msi",
+      "icon": "assets/logo.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.1.0",
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
