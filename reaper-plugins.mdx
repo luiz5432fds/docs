@@ -1,0 +1,193 @@
+---
+title: 'Developing Native Reaper Plugins'
+description: 'Overview of building custom JSFX and ReaScript tools for Brazilian mixing and composition'
+---
+
+This guide provides high-level steps to design your own audio plugins directly in **Reaper**. All examples rely only on Reaper's native technologies—**JSFX** for real-time effects and **ReaScript** (Lua or Python) for automation. The goal is to recreate features similar to well-known plugins such as Ozone, Melodyne and Realphones using only scripts you control.
+
+## 1. Mastering Chain (Ozone-style)
+
+Create a JSFX that chains multiple built-in effects:
+
+1. Start with `ReaEQ` for equalization.
+2. Add a compressor stage using `ReaComp`.
+3. Include a saturation module with the JS effect `saturation`.
+4. Finish with a maximizer (JS `soft clipper`).
+
+You can automate the creation of this chain with a Lua script:
+
+```lua
+-- master_chain.lua
+reaper.TrackFX_AddByName(track, 'ReaEQ', false, -1)
+reaper.TrackFX_AddByName(track, 'ReaComp', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Saturation', false, -1)
+reaper.TrackFX_AddByName(track, 'JS: Soft clipper', false, -1)
+```
+
+Run the script to load the chain on the selected track. Adjust parameters programmatically as needed.
+
+## 2. Vocal Tuning (Melodyne-style)
+
+Reaper ships with **ReaTune**, which can be expanded via ReaScript for better workflow:
+
+```lua
+-- select item and apply automatic tuning
+local item = reaper.GetSelectedMediaItem(0, 0)
+if item then
+  reaper.Main_OnCommand(40297, 0) -- open item in built-in pitch editor
+  -- optionally adjust ReaTune parameters here
+end
+```
+
+For more advanced manipulation, parse item pitch information using `reaper.GetTakeEnvelopeByName()` and apply corrections frame by frame.
+
+## 3. Headphone Room Simulation (Realphones-style)
+
+A JSFX can emulate headphone correction by combining EQ curves and short convolution impulses that mimic room reflections:
+
+```c
+desc:RoomSim
+slider1:gain=0<-12,12,0.1>Gain (dB)
+@sample
+spl0 = spl0 * 10^(gain/20);
+spl1 = spl1 * 10^(gain/20);
+// add simple crossfeed and IR convolution here
+```
+
+Place your measured IR wave files in the `Data` folder and load them using `impulse` functions within JSFX.
+
+## 4. Groove Generators for Forró and Outros Ritmos
+
+A Lua script pode produzir grooves de **forró**, **brega**, **piseiro**, **arrocha** e **calypso**. Guarde padrões rítmicos em uma tabela e insira-os em trilhas MIDI do projeto:
+
+```lua
+local patterns = {
+  {60, "zabumba.mid"},
+  {70, "triangulo.mid"}
+}
+for _, p in ipairs(patterns) do
+  -- carrega cada arquivo e insere no cursor de reprodução
+end
+```
+
+Customize the script to randomize fills or vary the swing percentage.
+
+## 5. Educational Toolkit
+
+Use ReaScript to open PDF references on harmony, contraponto and orquestração directly from inside Reaper. You can also integrate an external Python model (e.g. built with `music21`) to analyze your MIDI files and suggest chord substitutions or counterpoint lines. The script could highlight wrong notes in the notation view and propose fixes.
+
+## 6. Project Templates
+
+1. Create a new Reaper project with tracks for percussion, bass, harmony, melody and vocals.
+2. Save as template via **File > Project templates > Save template**.
+3. Automate template loading with a script that asks for project type (quadrilha, peça de teatro, coral) and sets up specific routing or track names.
+
+This approach keeps everything native to Reaper while giving flexibility to expand features over time. Each component—mastering chain, vocal tuning, room simulation, groove generation and educational helpers—can be gradually improved with more advanced JSFX coding and Python logic for AI assistance.
+
+## 7. Notation Editor (MuseScore Features)
+
+Reaper possui uma visualização de notação integrada, mas é possível estender suas funcionalidades para lembrar o MuseScore. Use scripts em Lua para adicionar atalhos de inserção de dinâmica e articulação. A automação de volume pode ser vinculada às marcas de crescendo e decrescendo:
+
+```lua
+-- dynamic_to_volume.lua
+local take = reaper.MIDIEditor_GetTake(reaper.MIDIEditor_GetActive())
+-- analisa textos "<" ou ">" e cria envelopes correspondentes
+```
+
+Combine este script com a exportação de PDF para gerar partituras prontas diretamente do Reaper, dispensando outros editores externos.
+## 8. AI Composition Assistant
+
+A proposta é integrar modelos de IA que ofereçam sugestões de acordes, melodias e até roteiros de peças ou quadrilhas. Bibliotecas Python como **Magenta**, **music21** e **huggingface/transformers** podem ser acionadas via ReaScript para gerar ideias em tempo real. Um painel no Reaper pode exibir opções de harmonização ou letras e, ao aceitar, o script insere o resultado em uma trilha MIDI ou em um bloco de texto.
+
+## 9. Gerador de Corais
+
+Um script em Lua pode duplicar linhas melódicas criando vozes em terças, quintas ou quartas, formando arranjos corais simples. Combine com amostras de coros gratuitos, como o *Free Choir* da Versilian Studios, para obter um som convincente.
+
+## 10. Detecção de BPM e Separador de Stems
+
+Utilize bibliotecas Python como **librosa** ou **madmom** para detectar BPM e marcas de batida. Para separar faixas estéreo em stems, recorra ao projeto open source **Spleeter**. Esses processos podem ser disparados a partir de um script ReaScript que exporta o áudio atual, executa o processamento externo e traz os resultados de volta ao projeto.
+
+## 11. Simulação de Microfones e Amplificadores
+
+A própria comunidade do Reaper oferece JSFX que emulam microfones e cabeçotes de guitarra. Além deles, efeitos gratuitos como **Airwindows** ou o conjunto **Guitarix** (Linux) podem servir de base para criar suas próprias cadeias de amp. Ajuste IRs de caixas para variar o timbre.
+
+## 12. Tratamento e Restauração de Áudio
+
+Para timbragem de bateria gravada em ambientes inadequados, experimente plugins nativos de gate, expansores e equalizadores paramétricos. Em Lua é possível programar algoritmos de *sample replacement* que trocam picos por amostras de melhor qualidade. Para remoção de ruídos, use o JSFX "DeNoise" ou integre bibliotecas como **RNNoise** via scripts externos. Essas rotinas ajudam a restaurar gravações problemáticas sem depender de plugins comerciais.
+
+
+## 13. Jazz Orchestration and Block Chords
+
+Para compor em linguagem de jazz, crie scripts que sugiram **voicings em bloco** para seções de metais e madeiras. Um gerador pode agrupar notas nas terças superiores e manter a melodia na voz principal. Para cada sugestão, o script mostra uma grade de acordes e exporta para MIDI.
+
+```lua
+-- block_voicing.lua
+local chord = {60, 64, 67} -- Cmaj
+for i, n in ipairs(chord) do
+  reaper.MIDI_InsertNote(take, false, false, startppq, endppq, 0, n, 100, false)
+end
+```
+
+Esse exemplo insere um acorde básico; expanda com substituições e extensões de jazz, como 7(9) ou 13.
+
+## 14. Melody and Counterpoint Generator
+
+Utilize bibliotecas como **music21** para gerar melodias a partir de escalas ou motivos. O script analisa a harmonia atual e propõe linhas contrapontísticas, destacando notas proibidas na partitura.
+
+## 15. Groove and Convention Builder
+
+Amplie os grooves de forró com convenções de viradas. O script sorteia variações e marca no arranjo pontos de repetição, criando seções prontas para ensaio.
+
+## 16. Mix Assistant
+
+Crie um JSFX que monitora o espectro e o balanço estéreo, sugerindo equalizações ou regravações se o ruído estiver alto. O plugin exibe dicas em tempo real e pode acionar scripts de ajuste automático.
+
+## 17. Visual Interfaces
+
+Todas as ferramentas acima podem usar os recursos gráficos do JSFX ou bibliotecas Lua para criar **interfaces atrativas**. Modelos generativos de imagem (como Stable Diffusion offline) podem fornecer "skins" personalizadas para cada plugin.
+
+
+## 18. Advanced Sampler
+
+Crie um sampler customizado em JSFX que combine a facilidade do **ReaSamplomatic5000** com recursos modernos como mapeamento por arrastar‑e‑soltar, round‑robin automático e filtros de alta qualidade.
+
+```c
+// pseudo-código para inicializar um sample
+load_sample("kick.wav");
+slider1:cutoff=200<20,20000>Filtro
+@slider
+// aplica filtro sem aliasing no buffer
+```
+
+Adicione scripts em Lua para abrir janelas de pré‑escuta e navegar pelas pastas de amostras rapidamente. O objetivo é superar samplers tradicionais em agilidade e simplicidade.
+
+## 19. Critical Music Assistant
+
+Integre um módulo de análise que compare sua mixagem a padrões de mercado usando medições de LUFS, espectro e dinâmica. O script gera relatórios destacando frequências excessivas, faixa dinâmica limitada ou problemas de panorâmica.
+
+```lua
+-- critical_mix.lua
+local lufs = reaper.JS_LUFSMeter_GetLUFS()
+if lufs > -14 then
+  gfx.printf("Nível alto: abaixe o volume em %.1f dB", lufs + 14)
+end
+```
+
+Mostre essas dicas em uma janela flutuante e ofereça a opção de abrir referências sonoras para comparação. Assim você conta com um "ouvido extra" para chegar aos melhores padrões de produção.
+
+## 20. Classic Guitar Effects
+
+Monte um conjunto de JSFX que simule pedais famosos de guitarra (overdrive, chorus, delay e wah). Cada efeito deve possuir controles simples inspirados em modelos clássicos como Tube Screamer, Boss CE-1 e Cry Baby. Encadeie esses módulos em scripts Lua para carregar rapidamente uma cadeia de pedais.
+
+## 21. Tape Simulator
+
+Para reproduzir a saturação de gravações em fita, desenvolva um JSFX que combine compressão suave com ruído de fita e variação sutil de velocidade (*wow & flutter*). Ajuste parâmetros como **bias** e **tape speed** para aproximar rolos lendários como o Studer A800.
+
+## 22. Channel Strip Emulations
+
+Crie um canal completo inspirado em mesas clássicas (Neve 1073, SSL 4000, API). O JSFX deve incluir pré‑amplificador, filtro de graves, equalizador paramétrico e compressor. Use curvas de resposta aproximadas conforme descritas em fóruns de áudio e testes de usuários.
+
+## 23. Groove‑Based Quantizer
+
+Desenvolva um quantizador inteligente que analisa o estilo atual e aplica "swing" baseado em performances de grandes músicos. Para sanfona, utilize como referência **Dominguinhos** e **Luiz Gonzaga**. Para percussão, modele o groove em **Naná Vasconcelos**, **Quartinha** e **Jackson do Pandeiro**. O algoritmo ajusta a posição de cada nota segundo curvas extraídas desses intérpretes, preservando a musicalidade.
+

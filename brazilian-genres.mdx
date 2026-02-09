@@ -1,0 +1,73 @@
+---
+title: 'Brazilian Genres Toolkit'
+description: 'Composition tips and sample resources for forró, brega, piseiro, arrocha and calypso'
+---
+
+This guide expands the educational platform with content specifically about **forró**, **brega**, **piseiro**, **arrocha** and **calypso**. Each section highlights common arranging techniques and suggests how to build sample libraries and groove tools directly in **Reaper**.
+
+## Forró
+
+- **Instrumentação típica**: sanfona, zabumba, triângulo e baixo.
+- **Dicas de composição**: use linhas de baixo sincopadas com o triângulo em contratempo. Combine progressões simples (I–IV–V) com variações rítmicas.
+- **Samples**: grave seus próprios loops ou procure coleções gratuitas voltadas a ritmos nordestinos. Organize tudo no *Media Explorer* do Reaper.
+- **Gerador de grooves**: mantenha arquivos MIDI de baião e xote em uma pasta. Um script Lua pode inseri-los automaticamente em trilhas específicas.
+
+```lua
+-- forró_groove.lua
+local grooves = {"baião.mid", "xote.mid"}
+for _, file in ipairs(grooves) do
+  reaper.InsertMedia(file, 0)
+end
+```
+
+## Brega
+
+- **Características**: melodias emotivas com arranjos de cordas e metais leves.
+- **Samples**: combine sintetizadores e timbres orquestrais suaves. Mantenha presets personalizados para "rasgado" ou "romântico".
+- **Automação**: utilize envelopes de volume para enfatizar frases vocais, programando curvas via ReaScript.
+
+## Piseiro
+
+- **Ritmo**: batidas eletrônicas simples, geralmente em 4/4 com BPM elevado.
+- **Samples**: crie kits de percussão eletrônica e leads de teclado. Organize um template com faixas de percussão, baixo e efeitos.
+- **Lua**: scripts podem alternar padrões de caixas e tambores, gerando variações a cada compasso.
+
+## Arrocha
+
+- **Harmonia**: progressões lentas, uso frequente de teclado e violão.
+- **Samples**: timbres de acordeon, guitarras limpas e bateria acústica com ritmos balanceados.
+- **Dicas**: utilize automação de *time stretch* para preencher espaços entre frases vocais.
+
+## Calypso
+
+- **Energia**: mistura de guitarras marcantes com percussão regional.
+- **Samples**: loops de conga, timbal e riffs de guitarra. Mantenha presets de distorção leves.
+- **Grooves**: scripts podem alternar entre levadas rápidas e ritmos de brega, permitindo transições em performances ao vivo.
+
+## Loops de Sanfona
+- Capture linhas no estilo de Dominguinhos e Luiz Gonzaga para obter articulacoes autenticas.
+
+- Reúna levadas de sanfona de forró, xote, baião e sertanejo. Organize arquivos MIDI e gravações em diferentes andamentos.
+- Scripts em Lua podem alternar essas levadas conforme o BPM escolhido.
+- Use o mesmo banco para estilos como arrocha e piseiro, variando apenas a batida de apoio.
+
+## Integração com Reaper
+
+1. Crie **track templates** separados para cada estilo acima. Inclua roteamento de efeitos, nomes de trilhas e marcadores de formatação.
+2. Use scripts em Lua ou Python para carregar o template correto e importar os samples desejados.
+3. Combine essas ferramentas com o editor de partituras descrito na seção de plugins para registrar arranjos e gerar partituras PDF.
+
+Esses recursos deixam o Reaper pronto para produções brasileiras sem depender de plugins externos.
+
+## Música Armorial e Ritmos Regionais
+
+Este segmento abrange expressões como maracatu, maxixe, baião, caboclinho, frevo, boi bumbá, carimbó e lambada, bem como a escola armorial de Ariano Suassuna e a banda Sagrama. Para cada estilo, procure amostras de alfaia, caixa, pífano, trombones e percussão variada em acervos gratuitos como **Freesound** ou bibliotecas brasileiras independentes. Monte templates no Reaper que já tragam efeitos de ambiência e equalização adequados a cada ritmo.
+
+### Onde encontrar bibliotecas
+
+- **Freesound.org** oferece uma gama extensa de percussões e efeitos naturais.
+- **Versilian Community Edition** disponibiliza instrumentos orquestrais de forma gratuita, ótimos para unir ao repertório armorial.
+- **Samples brasileiros** distribuídos por produtoras locais (procure por "pacote forró" ou "maracatu samples" em repositórios abertos).
+
+Combine essas coleções com scripts de groove descritos neste guia para criar playbacks autênticos em poucos minutos.
+

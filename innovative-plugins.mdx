@@ -1,0 +1,77 @@
+---
+title: 'Modern Plugin Inspirations'
+description: 'Ideas from recent innovative audio plugins and how to emulate them in Reaper'
+---
+
+This page highlights some of the most creative audio plugins released in the last
+five years and suggests approaches to build **similar tools** using Reaper's
+native scripting. The focus is on concepts rather than exact clones so that you
+can adapt the techniques for your own workflows.
+
+## 1. AI-Powered Mixing and Mastering
+
+Plugins like **iZotope Neutron 4**, **Oeksound Soothe2** and **Gullfoss** use
+advanced analysis to automatically balance frequencies and dynamics. In Reaper
+you can script simplified versions by measuring the spectrum and applying
+parameter changes via JSFX:
+
+```lua
+-- dynamic_eq.lua
+local track = reaper.GetSelectedTrack(0, 0)
+-- analyze spectrum and adjust ReaEQ bands
+```
+
+Combine FFT analysis with envelope followers to smooth harsh resonances or tame
+excessive sibilance.
+
+## 2. Smart Reverb and Space Modeling
+
+Recent reverbs such as **FabFilter Pro-R 2** and **SoundTheory Vulcan** offer
+adaptive decay and EQ controls. You can mimic these ideas by chaining Reaper's
+`ReaVerb` with scripted adjustments to impulse responses and damping settings
+based on the material being processed.
+
+## 3. Performance Capture and Randomization
+
+Tools like **XLN Audio XO** and **Audio Damage Quanta 2** organize samples and
+introduce subtle randomization. In Reaper, use Lua to build a sample browser that
+loads percussion hits or synth patches, then apply random velocity and timing
+variations each time they are triggered.
+
+## 4. Modulation Workflows
+
+Modern modulation plugins (e.g., **Cableguys ShaperBox 3**) let you draw custom
+LFO shapes to control multiple parameters. Reaper's `Parameter Modulation`
+feature combined with JSFX can achieve a similar effect. Create a script that
+writes automation envelopes based on user-drawn curves or imported MIDI shapes.
+
+## 5. Realphones Environment Simulator
+
+To ensure your mix translates everywhere, design a JSFX that applies headphone
+and speaker profiles inspired by **dSONIQ Realphones**. Measure or approximate EQ
+curves for popular models such as KZ in-ears, AKG studio headphones, Samsung
+buds, and common smartphone speakers. Include impulse responses of environments
+like cars, street parties, theaters in Recife and other Brazilian venues.
+
+```c
+desc:EnvSim
+slider1:model=0<0,5,1>Profile
+@init
+models = {
+  "KZ-Default",
+  "AKG Studio",
+  "Samsung Mobile",
+  "Car Sedan",
+  "Paredao",
+  "Teatro Recife"
+}
+@slider
+// load EQ curve or IR for selected model
+```
+
+Switch between profiles to audition how your mix sounds on each system—from
+compact earbuds to large PA setups in arraiás or autódromos. This approach helps
+balance the mix so it translates well in any location.
+
+With these examples, you can explore fresh plugin ideas without leaving Reaper,
+building your own tailored tools from recent innovation trends.
