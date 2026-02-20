@@ -13,6 +13,7 @@ import {jitterDriftPreset, mapRealismToolkit} from './synthesis/realism_toolkit'
 import {driftLfoGuide, laWaveformGuide, metalAttackAsyncGuide, ringModProgrammingGuide, stringAftertouchCurves} from './synthesis/xps10_programming';
 import {buildIntelligentTimbreAlgorithm} from './synthesis/intelligent_assistant_algorithm';
 import {buildSourceFindingsConsolidation} from './synthesis/source_findings_consolidation';
+import {buildVisualArchitecturePlan} from './synthesis/visual_architecture_plan';
 
 admin.initializeApp();
 
@@ -339,6 +340,16 @@ export const getSourceFindingsConsolidation = onCall(async (request: any) => {
     family: payload.family,
     targetBrightness: payload.targetBrightness,
     targetDensity: payload.targetDensity,
+  });
+});
+
+
+export const getVisualArchitecturePlan = onCall(async (request: any) => {
+  assertAuth(request);
+  const payload = (request.data ?? {}) as any;
+  return buildVisualArchitecturePlan({
+    focus: payload.focus,
+    stageMode: payload.stageMode,
   });
 });
 

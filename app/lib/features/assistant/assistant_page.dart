@@ -17,6 +17,7 @@ class _AssistantPageState extends State<AssistantPage> {
   double _aftertouch = 0.50;
   Map<String, dynamic>? _algorithm;
   Map<String, dynamic>? _consolidation;
+  Map<String, dynamic>? _visualPlan;
   bool _loading = false;
 
   Future<void> _runAlgorithm() async {
@@ -49,6 +50,23 @@ class _AssistantPageState extends State<AssistantPage> {
       );
       if (!mounted) return;
       setState(() => _consolidation = res);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+
+
+  Future<void> _loadVisualPlan() async {
+    setState(() => _loading = true);
+    try {
+      final ai = context.read<AiRouterService>();
+      final res = await ai.getVisualArchitecturePlan(
+        focus: 'full',
+        stageMode: true,
+      );
+      if (!mounted) return;
+      setState(() => _visualPlan = res);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -107,6 +125,12 @@ class _AssistantPageState extends State<AssistantPage> {
             icon: const Icon(Icons.library_books),
             label: const Text('Consolidar achados das fontes em código'),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _loading ? null : _loadVisualPlan,
+            icon: const Icon(Icons.space_dashboard),
+            label: const Text('Gerar plano visual de ponta'),
+          ),
           const SizedBox(height: 16),
           if (_algorithm != null) ...[
             Text('Modo selecionado: ${selector?['mode'] ?? '-'}'),
@@ -137,6 +161,15 @@ class _AssistantPageState extends State<AssistantPage> {
             const Text('Aplicação no XPS-10:'),
             Text('• ${((_consolidation?['xps10PracticalMappings'] as Map?)?['accumulatorOnXps10']) ?? '-'}'),
             Text('• ${((_consolidation?['xps10PracticalMappings'] as Map?)?['hanningUse']) ?? '-'}'),
+          ],
+
+
+          if (_visualPlan != null) ...[
+            const Divider(height: 24),
+            const Text('Consolidação visual de ponta', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Título: ${_visualPlan?['title'] ?? '-'}'),
+            Text('Foco: ${_visualPlan?['focus'] ?? '-'}'),
+            Text('Segurança: ${_visualPlan?['safety'] ?? '-'}'),
           ],
         ],
       ),

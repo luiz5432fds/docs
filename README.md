@@ -77,6 +77,7 @@ PowerShell:
 - `docs/XPS10_PROGRAMMING_GUIDE.md` com receitas de Ring Mod, LA, drift e curvas de aftertouch.
 - `docs/INTELLIGENT_TIMBRE_ALGORITHM.md` com o pipeline automatizado do assistente (análise → síntese → articulação → mix).
 - `docs/SOURCE_FINDINGS_CONSOLIDATION.md` com respostas consolidadas (SysEx/PhISM/drift) e tradução em código para implementação.
+- `docs/VISUAL_AUDIO_ARCHITECTURE_PLAN.md` com plano visual hierárquico/modular/granular/semântico para interface avançada.
 
 ## Recursos implementados (MVP)
 - Login Google obrigatório.
@@ -103,6 +104,7 @@ PowerShell:
   - `getXps10ProgrammingGuide`
   - `getIntelligentAssistantAlgorithm`
   - `getSourceFindingsConsolidation`
+  - `getVisualArchitecturePlan`
   - `onPatchWrite`
   - `onPdfUploaded`
 - Regras de segurança Firestore/Storage conforme escopo do produto.

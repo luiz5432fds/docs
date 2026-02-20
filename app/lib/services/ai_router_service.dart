@@ -133,6 +133,19 @@ class AiRouterService extends ChangeNotifier {
     }
   }
 
+
+  Future<Map<String, dynamic>> getVisualArchitecturePlan({
+    String focus = 'full',
+    bool stageMode = false,
+  }) async {
+    final payload = {'focus': focus, 'stageMode': stageMode};
+    try {
+      return await _fromProvider(activeProvider, 'getVisualArchitecturePlan', payload);
+    } catch (_) {
+      return _fromProvider(AiProviderType.firebaseFunctions, 'getVisualArchitecturePlan', payload);
+    }
+  }
+
   Future<Map<String, dynamic>> getXps10ProgrammingGuide() async {
     try {
       return await _fromProvider(activeProvider, 'getXps10ProgrammingGuide', {});
