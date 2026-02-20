@@ -45,6 +45,8 @@ export async function ingestPdfFromStorage(uid: string, docId: string, bucket: s
     await batch.commit();
   }
 
+  await deleteOldChunks(uid, docId, chunks.length);
+
   await docRef.set({
     status: 'ready',
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
@@ -64,4 +66,23 @@ function chunkText(text: string, size: number, overlap: number): string[] {
     i += size - overlap;
   }
   return out;
+}
+
+
+async function deleteOldChunks(uid: string, docId: string, nextChunkCount: number) {
+  const db = admin.firestore();
+  const staleSnap = await db.collection('kb_chunks')
+    .where('uid', '==', uid)
+    .where('docId', '==', docId)
+    .limit(5000)
+    .get();
+
+  const staleDocs = staleSnap.docs.filter((doc: any) => Number(doc.data().chunkIndex ?? 0) >= nextChunkCount);
+
+  for (let start = 0; start < staleDocs.length; start += MAX_BATCH_WRITES) {
+    const batch = db.batch();
+    const slice = staleDocs.slice(start, start + MAX_BATCH_WRITES);
+    slice.forEach((doc: any) => batch.delete(doc.ref));
+    await batch.commit();
+  }
 }

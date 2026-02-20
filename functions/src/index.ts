@@ -367,17 +367,24 @@ export const onPdfUploaded = onObjectFinalized(async (event) => {
   if (!path.startsWith('users/') || !path.endsWith('.pdf')) return;
   const [_, uid, ...rest] = path.split('/');
   const fileName = rest[rest.length - 1];
-  const docId = fileName.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const baseDocId = fileName.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const docId = `${uid}_${baseDocId}`;
   await ingestPdfFromStorage(uid, docId, event.data.bucket, path, fileName);
 });
 
 export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', async (event) => {
   const after = event.data?.after;
   const before = event.data?.before;
-  if (!after?.exists) return;
+  const patchId = event.params.patchId;
+
+  if (!after?.exists) {
+    if (before?.exists) {
+      await admin.firestore().collection('publicPatches').doc(patchId).delete().catch(() => undefined);
+    }
+    return;
+  }
 
   const uid = event.params.uid;
-  const patchId = event.params.patchId;
   const data = after.data() ?? {};
   const prev = before?.data() ?? {};
 
