@@ -116,10 +116,17 @@ Configurar secrets:
 - `GCP_SA_KEY_JSON`
 - `FIREBASE_PROJECT_ID`
 
+### Service Account (recomendado para deploy)
+
+1. No Google Cloud, crie uma Service Account dedicada para CI/CD.
+2. Conceda privilégios mínimos para deploy Firebase (ex.: Cloud Functions Admin, Firebase Admin, Service Account User).
+3. Gere chave JSON e salve em `GCP_SA_KEY_JSON` (GitHub Secrets).
+4. Configure `FIREBASE_PROJECT_ID` com o ID do projeto Firebase.
+
 Workflows:
 
-- deploy functions automático
-- build APK automático
+- deploy functions automático (com validação de secrets e build TypeScript)
+- build APK automático (Java 17 + Flutter stable)
 
 ## Recursos implementados
 
