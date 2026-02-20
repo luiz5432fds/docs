@@ -1,11 +1,12 @@
 {
   "name": "xps10-functions",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
     "serve": "firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
-    "test": "npm run build"
+    "test": "npm run build",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
     "node": "20"

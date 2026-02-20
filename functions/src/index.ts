@@ -373,7 +373,7 @@ export const searchKB = onCall(async (request: any) => {
 export const onPdfUploaded = onObjectFinalized(async (event: any) => {
   const path = event.data.name ?? '';
   if (!path.startsWith('users/') || !path.endsWith('.pdf')) return;
-  const [_, uid, ...rest] = path.split('/');
+  const [, uid, ...rest] = path.split('/');
   const fileName = rest[rest.length - 1];
   const baseDocId = fileName.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_');
   const docId = `${uid}_${baseDocId}`;
