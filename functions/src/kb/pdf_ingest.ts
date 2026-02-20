@@ -71,18 +71,21 @@ function chunkText(text: string, size: number, overlap: number): string[] {
 
 async function deleteOldChunks(uid: string, docId: string, nextChunkCount: number) {
   const db = admin.firestore();
-  const staleSnap = await db.collection('kb_chunks')
-    .where('uid', '==', uid)
-    .where('docId', '==', docId)
-    .limit(5000)
-    .get();
 
-  const staleDocs = staleSnap.docs.filter((doc: any) => Number(doc.data().chunkIndex ?? 0) >= nextChunkCount);
+  while (true) {
+    const staleSnap = await db.collection('kb_chunks')
+      .where('uid', '==', uid)
+      .where('docId', '==', docId)
+      .where('chunkIndex', '>=', nextChunkCount)
+      .limit(MAX_BATCH_WRITES)
+      .get();
 
-  for (let start = 0; start < staleDocs.length; start += MAX_BATCH_WRITES) {
+    if (staleSnap.empty) break;
+
     const batch = db.batch();
-    const slice = staleDocs.slice(start, start + MAX_BATCH_WRITES);
-    slice.forEach((doc: any) => batch.delete(doc.ref));
+    staleSnap.docs.forEach((doc: any) => batch.delete(doc.ref));
     await batch.commit();
+
+    if (staleSnap.size < MAX_BATCH_WRITES) break;
   }
 }
