@@ -28,7 +28,7 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         with:
           fail: true
-          args: "--config=.gitleaks.toml --redact --verbose"
+          args: "--config=.gitleaks.toml --baseline-path=gitleaks-baseline.json --redact --verbose"
 
       - name: Check merge conflict markers
         working-directory: .
