@@ -1,73 +1,79 @@
 # XPS-10 AI Workstation (PT-BR) — Monorepo
 
-Monorepo com:
-- App **Flutter Android** (PT-BR, UI estilo workstation/Juno)
-- Backend **Firebase** (Auth Google, Firestore, Functions, Storage)
-- Regras de segurança (Firestore/Storage)
-- CI/CD (deploy Functions + build APK)
+Monorepo contendo:
 
-## Estrutura
+- App Flutter Android (PT-BR, UI estilo Roland Juno Editor / workstation)
+- Backend Firebase (Authentication Google, Firestore, Cloud Functions, Storage)
+- Regras de segurança
+- CI/CD via GitHub Actions
+- Base de conhecimento com ingestão de PDF
+- Motor multi-IA concorrente
+
+---
+
+## Estrutura do projeto
 
 ```text
 .
-├─ app/                  # Flutter app (Android, PT-BR)
-├─ functions/            # Cloud Functions (TypeScript)
+├─ app/                  # Flutter app Android (PT-BR)
+├─ functions/            # Cloud Functions TypeScript
 ├─ firebase/             # firestore.rules, storage.rules, indexes
 ├─ scripts/              # scripts PowerShell (build)
-├─ docs/                 # documentação do produto, schema e roadmap
-├─ .github/workflows/    # CI/CD (deploy functions + build apk)
+├─ docs/                 # documentação técnica e arquitetura
+├─ .github/workflows/    # CI/CD
 └─ firebase.json
 ```
 
 ## Pré-requisitos
+
+Instalar:
+
 - Flutter SDK (stable)
 - Node.js 20+
-- Firebase CLI:
+- Firebase CLI
 
 ```bash
-npm i -g firebase-tools
+npm install -g firebase-tools
 ```
 
-- Projeto Firebase com:
-  - Authentication (Google)
-  - Firestore
-  - Storage
+Criar projeto Firebase com:
 
-## Setup Firebase (Android + Google Sign-In)
-1. Firebase Console → **Authentication** → Sign-in method → habilite **Google**.
-2. Firebase Console → **Project settings** → Your apps → **Android**:
-   - defina `applicationId` (ex.: `com.luiz.xps10.aiworkstation`)
-   - baixe `google-services.json`
-3. Coloque o arquivo em:
+- Authentication (Google)
+- Firestore
+- Storage
+
+## Setup Firebase (Android)
+
+1. Firebase Console → Authentication → habilitar Google.
+2. Firebase Console → Project Settings → Your Apps → Android.
+3. Definir:
+   - `applicationId: com.luiz.xps10.aiworkstation`
+4. Baixar:
+   - `google-services.json`
+5. Colocar em:
 
 ```text
 app/android/app/google-services.json
 ```
 
-4. (Opcional recomendado) adicione SHA-1 no Firebase para fluxos Google em alguns dispositivos.
-5. No diretório `app/` rode:
-
-```bash
-flutter pub get
-```
-
-6. Configure FlutterFire (gera `firebase_options.dart`):
+6. No diretório `app`:
 
 ```bash
 cd app
+flutter pub get
 flutterfire configure --project <FIREBASE_PROJECT_ID>
 ```
 
-## Deploy de backend (Functions + Rules)
+## Deploy backend
 
-Login e seleção do projeto:
+Login:
 
 ```bash
 firebase login
 firebase use <FIREBASE_PROJECT_ID>
 ```
 
-Build e deploy:
+Deploy Functions:
 
 ```bash
 cd functions
@@ -75,10 +81,15 @@ npm ci
 npm run build
 cd ..
 firebase deploy --only functions
+```
+
+Deploy rules:
+
+```bash
 firebase deploy --only firestore:rules,firestore:indexes,storage
 ```
 
-## Build APK release
+## Build APK
 
 ```bash
 cd app
@@ -92,43 +103,58 @@ APK gerado em:
 app/build/app/outputs/flutter-apk/app-release.apk
 ```
 
-Atalho PowerShell:
+Ou via PowerShell:
 
 ```powershell
 ./scripts/Build-APK.ps1
 ```
 
-## CI/CD — Service Account (GitHub Actions)
+## CI/CD (GitHub Actions)
 
-Este repositório usa `GCP_SA_KEY_JSON` e `FIREBASE_PROJECT_ID` nos workflows.
+Configurar secrets:
 
-Checklist recomendado:
-1. Criar Service Account no GCP para deploy.
-2. Conceder permissões mínimas para deploy Firebase (Functions/Rules/Storage conforme uso do projeto).
-3. Gerar chave JSON.
-4. Configurar secrets no GitHub:
-   - `GCP_SA_KEY_JSON`
-   - `FIREBASE_PROJECT_ID`
+- `GCP_SA_KEY_JSON`
+- `FIREBASE_PROJECT_ID`
+
+Workflows:
+
+- deploy functions automático
+- build APK automático
 
 ## Recursos implementados
 
-### MVP (obrigatório)
-- Login Google obrigatório.
-- Home com módulos: gerar timbre, editor, setlists, decoder, comunidade, configurações, assistente, base de conhecimento.
-- AI Router com providers:
-  - `ProviderFirebaseFunctions` (padrão/fallback)
-  - `ProviderLocal` (stub)
-  - `ProviderExternal` (stub)
-- Cloud Functions MVP:
-  - `generatePatch`
-  - `runAgents`
-  - `evaluatePatch`
-  - `searchKB`
-  - `likePublicPatch`
-  - `onPatchWrite`
-  - `onPdfUploaded`
+### MVP
 
-### Fase 2 (catálogos/guias e extensões)
+App:
+
+- Login Google obrigatório
+- Editor estilo Roland Juno Editor
+- Motor de geração de timbres
+- Assistente multi-IA concorrente
+- Setlists
+- Base de conhecimento (PDF ingest)
+- Comunidade de patches
+
+Providers:
+
+- `ProviderFirebaseFunctions`
+- `ProviderLocal` (stub)
+- `ProviderExternal` (stub)
+
+Functions MVP:
+
+- `generatePatch`
+- `runAgents`
+- `evaluatePatch`
+- `searchKB`
+- `likePublicPatch`
+- `onPatchWrite`
+- `onPdfUploaded`
+
+### Fase 2 (expansão)
+
+Functions adicionais:
+
 - `mapSemanticDescriptor`
 - `getRecipeCatalog`
 - `getArticulationIdeas`
@@ -144,30 +170,26 @@ Checklist recomendado:
 - `getVisualArchitecturePlan`
 
 ## Limitações conhecidas
-- `SysexAdapter` desativado por padrão.
-- Decoder de som é aproximação (não clonagem perfeita).
 
-## Mintlify (somente documentação)
-Se usar Mintlify neste repositório, garanta `docs.json` na raiz e rode:
-
-```bash
-mintlify dev
-```
+- `SysexAdapter` desativado por padrão
+- Decoder de som é aproximação
+- IA embarcada ainda é stub
+- Secrets obrigatórios para CI/CD
 
 ## Documentação técnica
+
+Ver:
+
 - `docs/PRODUCT.md`
 - `docs/SCHEMA.md`
 - `docs/ROADMAP.md`
-- `docs/MATH_FRAMEWORK_XPS10.md`
-- `docs/CODE_CPP_EXAMPLES.md`
-- `docs/RECIPE_FAMILIES_XPS10.md`
-- `docs/ADVANCED_ARTICULATIONS_XPS10.md`
-- `docs/SYNTHESIS_CODEBOOK_XPS10.md`
-- `docs/MULTI_LANGUAGE_DSP_RECIPES_XPS10.md`
-- `docs/GESTURAL_ARTICULATION_ENGINE_XPS10.md`
-- `docs/MIX_READY_PRESETS_XPS10.md`
-- `docs/REALISM_SOUND_ENGINE_XPS10.md`
-- `docs/XPS10_PROGRAMMING_GUIDE.md`
 - `docs/INTELLIGENT_TIMBRE_ALGORITHM.md`
-- `docs/SOURCE_FINDINGS_CONSOLIDATION.md`
-- `docs/VISUAL_AUDIO_ARCHITECTURE_PLAN.md`
+- `docs/XPS10_PROGRAMMING_GUIDE.md`
+
+## Ordem recomendada de execução
+
+1. Setup Firebase Console
+2. `flutterfire configure`
+3. `firebase deploy functions`
+4. `flutter build apk`
+5. Instalar APK no dispositivo
