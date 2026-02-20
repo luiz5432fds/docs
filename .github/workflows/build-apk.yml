@@ -2,6 +2,10 @@ name: Build Android APK (Release)
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "app/**"
+      - ".github/workflows/build-apk.yml"
   push:
     branches: ["main"]
     paths:
@@ -16,9 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: app
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Dependency Review (block moderate+)
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
 
       - uses: actions/setup-java@v4
         with:
@@ -32,11 +45,15 @@ jobs:
           cache: true
 
       - name: Flutter pub get
-        working-directory: app
         run: flutter pub get
 
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
       - name: Build APK (release)
-        working-directory: app
         run: flutter build apk --release
 
       - name: Upload artifact

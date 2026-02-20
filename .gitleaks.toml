@@ -1,0 +1,18 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow benign placeholders and test fixtures"
+paths = [
+  '''(?i)^app/.+/(test|tests)/.+''',
+  '''(?i)^functions/.+/(test|tests)/.+''',
+  '''(?i)^.+/__tests__/.+''',
+  '''(?i)^.+/fixtures/.+''',
+  '''(?i)^.+/mock(s)?/.+''',
+  '''(?i)^.+/coverage/.+''',
+  '''(?i)^.+/(dist|build|lib)/.+''',
+]
+regexes = [
+  '''(?i)\b(FAKE|DUMMY|EXAMPLE|PLACEHOLDER|TEST|SAMPLE)_[A-Z0-9_]+\b''',
+  '''(?i)\b(sk|rk)_(test|dummy|example)_[a-z0-9]{8,}\b''',
+]

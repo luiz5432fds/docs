@@ -22,3 +22,6 @@ functions/lib/
 *.keystore
 key.properties
 *.env
+# Functions artifacts
+functions/coverage/
+functions/sbom-functions.json
