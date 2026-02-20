@@ -50,12 +50,12 @@ function assertAuth(req: any): string {
   return uid;
 }
 
-export const runAgents = onCall(async (request) => {
+export const runAgents = onCall(async (request: any) => {
   const uid = assertAuth(request);
   return runAgentsOrchestrator(uid, request.data ?? {});
 });
 
-export const generatePatch = onCall(async (request) => {
+export const generatePatch = onCall(async (request: any) => {
   const uid = assertAuth(request);
   const result = await runAgentsOrchestrator(uid, request.data ?? {});
   return {
@@ -77,7 +77,7 @@ export const generatePatch = onCall(async (request) => {
   };
 });
 
-export const evaluatePatch = onCall(async (request) => {
+export const evaluatePatch = onCall(async (request: any) => {
   assertAuth(request);
   const panel = request.data?.panel ?? {};
   const issues: string[] = [];
@@ -102,7 +102,7 @@ export const evaluatePatch = onCall(async (request) => {
   };
 });
 
-export const likePublicPatch = onCall(async (request) => {
+export const likePublicPatch = onCall(async (request: any) => {
   assertAuth(request);
   const patchId = String(request.data?.patchId ?? '');
   if (!patchId) throw new HttpsError('invalid-argument', 'patchId é obrigatório.');
@@ -112,14 +112,14 @@ export const likePublicPatch = onCall(async (request) => {
 });
 
 
-export const mapSemanticDescriptor = onCall(async (request) => {
+export const mapSemanticDescriptor = onCall(async (request: any) => {
   assertAuth(request);
   const descriptors = (request.data?.descriptors ?? []) as string[];
   const mapped = mapDescriptors(descriptors);
   return {panel: mapped};
 });
 
-export const getRecipeCatalog = onCall(async (request) => {
+export const getRecipeCatalog = onCall(async (request: any) => {
   assertAuth(request);
   return {
     families: [
@@ -137,7 +137,7 @@ export const getRecipeCatalog = onCall(async (request) => {
 });
 
 
-export const getArticulationIdeas = onCall(async (request) => {
+export const getArticulationIdeas = onCall(async (request: any) => {
   assertAuth(request);
   return {
     families: {
@@ -156,7 +156,7 @@ export const getArticulationIdeas = onCall(async (request) => {
 });
 
 
-export const getSynthesisCodebook = onCall(async (request) => {
+export const getSynthesisCodebook = onCall(async (request: any) => {
   assertAuth(request);
   const sampleRate = Number(request.data?.sampleRate ?? 44100);
   const len = Number(request.data?.length ?? 2048);
@@ -193,7 +193,7 @@ export const getSynthesisCodebook = onCall(async (request) => {
 });
 
 
-export const getAdvancedDspPlaybook = onCall(async (request) => {
+export const getAdvancedDspPlaybook = onCall(async (request: any) => {
   assertAuth(request);
 
   const table = [0, 0.6, 1.0, 0.6, 0, -0.6, -1.0, -0.6];
@@ -252,7 +252,7 @@ export const getAdvancedDspPlaybook = onCall(async (request) => {
 });
 
 
-export const getGestureArticulationEngine = onCall(async (request) => {
+export const getGestureArticulationEngine = onCall(async (request: any) => {
   assertAuth(request);
   const family = String(request.data?.family ?? 'woodwinds') as any;
   const aftertouch = Number(request.data?.aftertouch ?? 0.5);
@@ -272,7 +272,7 @@ export const getGestureArticulationEngine = onCall(async (request) => {
 });
 
 
-export const getMixReadyPreset = onCall(async (request) => {
+export const getMixReadyPreset = onCall(async (request: any) => {
   assertAuth(request);
   const ctx = (request.data ?? {}) as any;
   const preset = buildInvisibleMixPreset({
@@ -293,13 +293,13 @@ export const getMixReadyPreset = onCall(async (request) => {
   };
 });
 
-export const getBrassFmGuide = onCall(async (request) => {
+export const getBrassFmGuide = onCall(async (request: any) => {
   assertAuth(request);
   return brassFmRecommendation();
 });
 
 
-export const getRealismToolkit = onCall(async (request) => {
+export const getRealismToolkit = onCall(async (request: any) => {
   assertAuth(request);
   const family = String(request.data?.family ?? 'classicSynth') as any;
   const aftertouch = Number(request.data?.aftertouch ?? 0.5);
@@ -314,7 +314,7 @@ export const getRealismToolkit = onCall(async (request) => {
 
 
 
-export const getIntelligentAssistantAlgorithm = onCall(async (request) => {
+export const getIntelligentAssistantAlgorithm = onCall(async (request: any) => {
   assertAuth(request);
   const payload = (request.data ?? {}) as any;
   const algorithm = buildIntelligentTimbreAlgorithm({
@@ -332,7 +332,7 @@ export const getIntelligentAssistantAlgorithm = onCall(async (request) => {
 });
 
 
-export const getSourceFindingsConsolidation = onCall(async (request) => {
+export const getSourceFindingsConsolidation = onCall(async (request: any) => {
   assertAuth(request);
   const payload = (request.data ?? {}) as any;
   return buildSourceFindingsConsolidation({
@@ -342,7 +342,7 @@ export const getSourceFindingsConsolidation = onCall(async (request) => {
   });
 });
 
-export const getXps10ProgrammingGuide = onCall(async (request) => {
+export const getXps10ProgrammingGuide = onCall(async (request: any) => {
   assertAuth(request);
   return {
     ringMod: ringModProgrammingGuide(),
@@ -354,7 +354,7 @@ export const getXps10ProgrammingGuide = onCall(async (request) => {
   };
 });
 
-export const searchKB = onCall(async (request) => {
+export const searchKB = onCall(async (request: any) => {
   const uid = assertAuth(request);
   const query = String(request.data?.query ?? '');
   if (!query.trim()) throw new HttpsError('invalid-argument', 'query é obrigatório.');
@@ -362,7 +362,7 @@ export const searchKB = onCall(async (request) => {
   return {hits};
 });
 
-export const onPdfUploaded = onObjectFinalized(async (event) => {
+export const onPdfUploaded = onObjectFinalized(async (event: any) => {
   const path = event.data.name ?? '';
   if (!path.startsWith('users/') || !path.endsWith('.pdf')) return;
   const [_, uid, ...rest] = path.split('/');
@@ -372,7 +372,7 @@ export const onPdfUploaded = onObjectFinalized(async (event) => {
   await ingestPdfFromStorage(uid, docId, event.data.bucket, path, fileName);
 });
 
-export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', async (event) => {
+export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', async (event: any) => {
   const after = event.data?.after;
   const before = event.data?.before;
   const patchId = event.params.patchId;
