@@ -8,6 +8,46 @@ function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
 }
 
+
+function xps10PhaseAccumulatorImplementation() {
+  return {
+    explanation: 'O acumulador de fase roda internamente no engine do XPS-10; no app você implementa o DSP e mapeia o resultado para parâmetros do painel.',
+    mapping: [
+      'freq -> coarse/fine tune do Tone',
+      'wavetable index -> escolha de waveform PCM/LA',
+      'envelope -> TVA ADSR',
+      'brilho -> TVF cutoff/resonance'
+    ],
+    snippetTs: [
+      'let phase = 0;',
+      'const inc = (freq * tableSize) / sampleRate;',
+      'phase = (phase + inc) % tableSize;',
+      'const i = Math.floor(phase); const a = phase - i;',
+      'const sample = table[i] * (1 - a) + table[(i + 1) % tableSize] * a;'
+    ]
+  };
+}
+
+function brassAdsrPresets() {
+  return {
+    softBrass: {attackMs: 22, decayMs: 180, sustain: 0.72, releaseMs: 260},
+    popBrass: {attackMs: 12, decayMs: 140, sustain: 0.66, releaseMs: 180},
+    stabBrass: {attackMs: 6, decayMs: 90, sustain: 0.52, releaseMs: 120},
+    note: 'Aumente cutoff com velocity/aftertouch para brilho dinâmico sem exagerar na ressonância.'
+  };
+}
+
+function hanningWhyAndHow() {
+  return {
+    explanation: 'A janela Hann reduz descontinuidade nas bordas do grão, minimizando cliques no overlap-add.',
+    math: 'w[n] = 0.5 - 0.5*cos(2πn/(N-1))',
+    snippetTs: [
+      'for (let n = 0; n < N; n++) win[n] = 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / (N - 1));',
+      'for (let n = 0; n < N; n++) out[pos + n] += grain[n] * win[n];'
+    ]
+  };
+}
+
 function brassAdsrByIntent(brightness: number, density: number) {
   const b = clamp01(brightness);
   const d = clamp01(density);
@@ -27,6 +67,9 @@ export function buildSourceFindingsConsolidation(input: ConsolidationInput = {})
 
   return {
     directAnswers: {
+      phaseAccumulatorOnXps10: xps10PhaseAccumulatorImplementation(),
+      brassAdsr: brassAdsrPresets(),
+      hanningWindow: hanningWhyAndHow(),
       sysexTablesXps10: {
         status: 'Não há tabela SysEx oficial completa incluída neste repositório.',
         practicalPolicy: [

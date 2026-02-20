@@ -49,3 +49,34 @@ osc2Freq = baseFreq * (1 - drift * 0.7);
 - **Janela Hann no granular:** suaviza bordas do grão e evita clicks no overlap-add.
 
 > Aviso: sem confirmação de mapeamento MIDI/SysEx, tudo deve ser tratado como sugestão/planejamento sem envio automático.
+
+
+## 6) Implementação direta pedida
+
+### Como implementar o acumulador de fase no contexto do XPS-10
+O acumulador roda no engine interno; no app, implemente o DSP e converta para parâmetros editáveis do teclado:
+- incremento de fase -> `coarse/fine tune`;
+- tabela -> seleção de `waveform`;
+- envelope -> `TVA`;
+- brilho -> `TVF`.
+
+```ts
+let phase = 0;
+const inc = (freq * tableSize) / sampleRate;
+phase = (phase + inc) % tableSize;
+const i = Math.floor(phase); const a = phase - i;
+const sample = table[i] * (1 - a) + table[(i + 1) % tableSize] * a;
+```
+
+### Melhores pontos de partida ADSR para metais
+- `Soft Brass`: A=22ms D=180ms S=0.72 R=260ms
+- `Pop Brass`: A=12ms D=140ms S=0.66 R=180ms
+- `Stab Brass`: A=6ms D=90ms S=0.52 R=120ms
+
+### Uso da janela Hann na síntese granular
+A Hann reduz descontinuidade de borda em cada grão, eliminando cliques no overlap-add.
+
+```ts
+for (let n = 0; n < N; n++) win[n] = 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / (N - 1));
+for (let n = 0; n < N; n++) out[pos + n] += grain[n] * win[n];
+```
