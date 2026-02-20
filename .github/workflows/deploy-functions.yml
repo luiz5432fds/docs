@@ -1,0 +1,43 @@
+name: Deploy Firebase Functions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "functions/**"
+      - "firebase/**"
+      - "firebase.json"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Write service account key
+        shell: bash
+        run: |
+          echo '${{ secrets.GCP_SA_KEY_JSON }}' > /tmp/gcp-sa.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-sa.json" >> $GITHUB_ENV
+
+      - name: Install Firebase CLI
+        run: npm i -g firebase-tools
+
+      - name: Install Functions deps
+        working-directory: functions
+        run: npm ci
+
+      - name: Build Functions
+        working-directory: functions
+        run: npm run build
+
+      - name: Deploy Functions
+        run: firebase deploy --only functions --project "${{ secrets.FIREBASE_PROJECT_ID }}"
