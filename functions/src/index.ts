@@ -14,6 +14,7 @@ import {driftLfoGuide, laWaveformGuide, metalAttackAsyncGuide, ringModProgrammin
 import {buildIntelligentTimbreAlgorithm} from './synthesis/intelligent_assistant_algorithm';
 import {buildSourceFindingsConsolidation} from './synthesis/source_findings_consolidation';
 import {buildVisualArchitecturePlan} from './synthesis/visual_architecture_plan';
+import {computePatchMirrorUpdate} from './utils/patch_mirror';
 
 admin.initializeApp();
 
@@ -40,10 +41,6 @@ function mapDescriptors(descriptors: string[]) {
 }
 
 
-function arraysEqual(a: string[], b: string[]) {
-  if (a.length !== b.length) return false;
-  return a.every((v, i) => v === b[i]);
-}
 
 function assertAuth(req: any): string {
   const uid = req.auth?.uid;
@@ -396,32 +393,25 @@ export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', a
   }
 
   const uid = event.params.uid;
-  const data = after.data() ?? {};
-  const prev = before?.data() ?? {};
+  const data = (after.data() ?? {}) as Record<string, unknown>;
+  const prev = before?.exists ? (before.data() ?? {}) as Record<string, unknown> : null;
 
-  const normalizedTags = Array.from(new Set((data.tags ?? []).map((t: string) => String(t).trim().toLowerCase()).filter(Boolean))) as string[];
-  const nextVersion = before?.exists ? Number(prev.version ?? 0) + 1 : 1;
-  const currentVersion = Number(data.version ?? 0);
-  const currentTags = ((data.tags ?? []) as string[]).map((t) => String(t));
-  const needsPatchUpdate = !arraysEqual(currentTags, normalizedTags) || currentVersion !== nextVersion;
+  const decision = computePatchMirrorUpdate(prev, data);
 
-  if (needsPatchUpdate) {
+  if (decision.needsUpdate) {
     await after.ref.set({
-      tags: normalizedTags,
-      version: nextVersion,
+      tags: decision.normalizedTags,
+      version: decision.nextVersion,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, {merge: true});
   }
 
-  const finalVersion = needsPatchUpdate ? nextVersion : currentVersion;
   const pubRef = admin.firestore().collection('publicPatches').doc(patchId);
   if (data.isPublic) {
     await pubRef.set({
-      ...data,
+      ...decision.mirrorPatch,
       ownerUid: uid,
       patchId,
-      tags: normalizedTags,
-      version: finalVersion,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, {merge: true});
   } else {

@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import pdfParse from 'pdf-parse';
+import {chunkArray} from '../utils/batching';
 
 const CHUNK_SIZE = 900;
 const CHUNK_OVERLAP = 120;
@@ -24,18 +25,19 @@ export async function ingestPdfFromStorage(uid: string, docId: string, bucket: s
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   }, {merge: true});
 
-  for (let start = 0; start < chunks.length; start += MAX_BATCH_WRITES) {
-    const batch = db.batch();
-    const slice = chunks.slice(start, start + MAX_BATCH_WRITES);
+  const indexedChunks = chunks.map((content, chunkIndex) => ({content, chunkIndex}));
+  const writeSlices = chunkArray(indexedChunks, MAX_BATCH_WRITES);
 
-    slice.forEach((content, offset) => {
-      const i = start + offset;
+  for (const slice of writeSlices) {
+    const batch = db.batch();
+
+    slice.forEach(({content, chunkIndex}) => {
       const keywords = Array.from(new Set(content.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 3))).slice(0, 25);
-      const ref = db.collection('kb_chunks').doc(`${docId}_${i}`);
+      const ref = db.collection('kb_chunks').doc(`${docId}_${chunkIndex}`);
       batch.set(ref, {
         uid,
         docId,
-        chunkIndex: i,
+        chunkIndex,
         content,
         keywords,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
