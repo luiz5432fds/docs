@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../community/community_page.dart';
+import '../sounds/sounds_page.dart';
+import '../store/store_page.dart';
+import '../support/support_page.dart';
 import '../decoder/decoder_page.dart';
 import '../editor/editor_page.dart';
 import '../generate/generate_page.dart';
@@ -25,7 +28,10 @@ class HomePage extends StatelessWidget {
       ('Base de Conhecimento', Icons.menu_book, const KbPage()),
       ('Setlists', Icons.queue_music, const SetlistsPage()),
       ('Decodificar Som', Icons.graphic_eq, const DecoderPage()),
+      ('Sounds (TAE®)', Icons.graphic_eq, const SoundsPage()),
+      ('Store', Icons.storefront, const StorePage()),
       ('Comunidade', Icons.public, const CommunityPage()),
+      ('Support', Icons.support_agent, const SupportPage()),
       ('Configurações', Icons.settings, const SettingsPage()),
     ];
 
