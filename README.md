@@ -192,6 +192,7 @@ Ver:
 - `docs/ROADMAP.md`
 - `docs/INTELLIGENT_TIMBRE_ALGORITHM.md`
 - `docs/XPS10_PROGRAMMING_GUIDE.md`
+- `docs/XPS10_GUARDRAILS.md` guardrails operacionais (USB/backup/polyphony/sync/samples).
 
 ## Ordem recomendada de execução
 

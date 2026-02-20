@@ -9,8 +9,14 @@ paths:
   - app
 
 paths-ignore:
+  - "**/*.g.dart"
+  - "**/*.freezed.dart"
   - "**/node_modules/**"
   - "**/dist/**"
   - "**/build/**"
   - "**/coverage/**"
   - "**/.dart_tool/**"
+
+query-filters:
+  - exclude:
+      id: js/unused-local-variable

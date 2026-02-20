@@ -2,6 +2,7 @@ name: CodeQL
 
 on:
   pull_request:
+  merge_group:
   push:
     branches: ["main"]
   schedule:
@@ -33,8 +34,10 @@ jobs:
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
 
-      - name: Analyze
+      - name: Analyze JS/TS
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
 
   codeql-dart:
     name: CodeQL Dart (security-extended)
@@ -64,5 +67,7 @@ jobs:
             echo "No app/pubspec.yaml; skipping."
           fi
 
-      - name: Analyze
+      - name: Analyze Dart
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:dart"
