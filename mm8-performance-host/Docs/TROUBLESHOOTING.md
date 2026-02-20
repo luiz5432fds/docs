@@ -1,26 +1,34 @@
-# Troubleshooting (MM8-XPS Performance Manager)
+# Troubleshooting (MM8 Workstation Performance Host)
 
-## JUCE_DIR not set
+## CMake não encontra JUCE
 
-Configure CMake with `-DJUCE_DIR=path/to/JUCE`.
+- Defina `JUCE_DIR` para o diretório onde o JUCE foi clonado.
+- Exemplo: `setx JUCE_DIR C:\dev\JUCE`
+- Ou passe no configure: `cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DJUCE_DIR=C:\dev\JUCE`
 
-## VST3 não aparece
+## CMake não encontra Visual Studio 2022
 
-- Confirme que o plugin está em uma pasta suportada.
-- Refaça o scan e reinicie o app.
+- Instale o workload **Desktop development with C++** (Build Tools ou Community).
+- Garanta que o `vswhere.exe` exista em `C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe`.
+- O `build_release.ps1` chama automaticamente o `VsDevCmd.bat`; não é necessário abrir o Developer Command Prompt manualmente.
+
+## VST2 não aparece
+
+- Defina `JUCE_VST2_SDK_PATH` com o SDK VST2 compatível.
+- Reconfigure o CMake depois de definir a variável.
 
 ## ASIO4ALL não aparece
 
-- Instale o ASIO4ALL.
-- Verifique se o driver está habilitado no Windows.
+- Instale o ASIO4ALL (https://www.asio4all.org/).
+- Confirme que o driver está habilitado no painel de áudio do Windows.
 
-## MIDI não aparece
+## Nenhum MIDI detectado
 
-- Reinstale o driver USB-MIDI do MM8.
-- Verifique se o dispositivo aparece no Gerenciador de Dispositivos.
+- Verifique se o Yamaha MM8 ou Roland XPS-10 está conectado via USB.
+- Abra a tela MIDI e confirme o nome do dispositivo.
+- Caso o dispositivo não apareça, reinicie o app após conectar o MM8.
 
-## Glitches / estalos
+## Scanner não encontra plugins
 
-- Aumente o buffer.
-- Desative plugins pesados.
-- Use sample rate fixo (48kHz recomendado).
+- Edite `config/plugin_paths.json` e confirme os caminhos.
+- Use a opção de rescan dentro do app.
