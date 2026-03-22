@@ -11,6 +11,7 @@ import {mapGestureToXps10} from './synthesis/gesture_engine';
 import {brassFmRecommendation, buildInvisibleMixPreset} from './synthesis/mix_bus';
 import {jitterDriftPreset, mapRealismToolkit} from './synthesis/realism_toolkit';
 import {driftLfoGuide, laWaveformGuide, metalAttackAsyncGuide, ringModProgrammingGuide, stringAftertouchCurves} from './synthesis/xps10_programming';
+import {runMaestroAgent as executeMaestroAgent} from './agents/maestro_agent';
 
 admin.initializeApp();
 
@@ -366,4 +367,89 @@ export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', a
   } else {
     await pubRef.delete().catch(() => undefined);
   }
+});
+
+// ============================================================================
+// MAESTRO IA - Musical Production Assistant Functions
+// ============================================================================
+
+export const runMaestroAgent = onCall(async (request) => {
+  const uid = assertAuth(request);
+  const prompt = String(request.data?.prompt ?? '');
+  const audioSource = request.data?.audioSource;
+
+  if (!prompt.trim()) {
+    throw new HttpsError('invalid-argument', 'Prompt é obrigatório.');
+  }
+
+  return executeMaestroAgent(uid, prompt, audioSource);
+});
+
+export const downloadYouTubeAudio = onCall(async (request) => {
+  const uid = assertAuth(request);
+  const url = String(request.data?.url ?? '');
+
+  if (!url.trim()) {
+    throw new HttpsError('invalid-argument', 'URL do YouTube é obrigatória.');
+  }
+
+  // Import audioDownloaderService
+  const {audioDownloaderService} = await import('./services/audioDownloader');
+
+  const result = await audioDownloaderService.downloadFromYouTube(url, uid);
+  return {path: result.storagePath, downloadUrl: result.downloadUrl};
+});
+
+export const exportMaestroProject = onCall(async (request) => {
+  const uid = assertAuth(request);
+  const projectId = String(request.data?.projectId ?? '');
+  const options = request.data?.options ?? {};
+
+  if (!projectId) {
+    throw new HttpsError('invalid-argument', 'projectId é obrigatório.');
+  }
+
+  // Get project from Firestore
+  const projectDoc = await admin.firestore()
+    .collection('users')
+    .doc(uid)
+    .collection('maestroProjects')
+    .doc(projectId)
+    .get();
+
+  if (!projectDoc.exists) {
+    throw new HttpsError('not-found', 'Projeto não encontrado.');
+  }
+
+  const project = projectDoc.data();
+
+  if (!project?.arrangement) {
+    throw new HttpsError('failed-precondition', 'Projeto não possui arranjo para exportar.');
+  }
+
+  const results: any = {};
+
+  // Export Reaper project if requested
+  if (options.reaperProject) {
+    const {reaperService} = await import('./services/reaperService');
+    results.reaperProject = await reaperService.createProject(project.arrangement);
+  }
+
+  // Export MIDI if requested
+  if (options.midiFile) {
+    const {reaperService} = await import('./services/reaperService');
+    results.midiFile = await reaperService.exportMidi(project.arrangement);
+  }
+
+  // Export MusicXML if requested
+  if (options.musicXml || options.pdfScore) {
+    const {musescoreService} = await import('./services/musescoreService');
+    results.musicXml = await musescoreService.createScore(project.arrangement);
+
+    if (options.pdfScore) {
+      results.pdfScore = await musescoreService.exportPdf(project.arrangement);
+    }
+  }
+
+  return results;
 });
