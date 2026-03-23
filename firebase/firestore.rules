@@ -1,6 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isSignedIn() {
       return request.auth != null;
     }
@@ -9,16 +10,22 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isAdmin() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+    }
+
+    // ============================================================================
+    // EXISTING RULES
+    // ============================================================================
+
     match /devices/{deviceId} {
       allow read: if true;
       allow write: if false;
     }
 
-    match /users/{uid} {
-      allow read, write: if isOwner(uid);
-      match /{document=**} {
-        allow read, write: if isOwner(uid);
-      }
+    match /publicPatches/{patchId} {
+      allow read: if true;
+      allow write: if false;
     }
 
     match /kb_docs/{docId} {
@@ -31,9 +38,134 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
     }
 
-    match /publicPatches/{patchId} {
+    // ============================================================================
+    // USER DOCUMENTS
+    // ============================================================================
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      // Patches
+      match /patches/{patchId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Setlists
+      match /setlists/{setlistId} {
+        allow read, write: if isOwner(uid);
+        match /items/{itemId} {
+          allow read, write: if isOwner(uid);
+        }
+      }
+
+      // SynKrony Projects
+      match /synkrony_projects/{projectId} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if isOwner(uid);
+
+        // Tracks within projects
+        match /tracks/{trackId} {
+          allow read, write: if isOwner(uid);
+        }
+      }
+
+      // Scores
+      match /scores/{scoreId} {
+        allow read: if isOwner(uid) || (resource != null && resource.data.isPublic == true);
+        allow create, update, delete: if isOwner(uid);
+        match /parts/{partId} {
+          allow read, write: if isOwner(uid);
+        }
+      }
+
+      // Arrangements
+      match /arrangements/{arrangementId} {
+        allow read: if isOwner(uid) || (resource != null && resource.data.isPublic == true);
+        allow create, update, delete: if isOwner(uid);
+
+        // Sections within arrangements
+        match /sections/{sectionId} {
+          allow read, write: if isOwner(uid);
+        }
+      }
+
+      // Hardware Configurations
+      match /hardware_configs/{configId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // KB Docs
+      match /kb_docs/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // KB Chunks
+      match /kb_chunks/{chunkId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ============================================================================
+    // PUBLIC COLLECTIONS - Read-only for everyone
+    // ============================================================================
+
+    // Genre Templates (Brega, Forró, Tecnobrega)
+    match /synkrony/genre_templates/{templateId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
+    }
+
+    // Hardware Presets
+    match /synkrony/hardware_presets/{presetId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Music Theory - Complete read access, admin write
+    match /music_theory/{doc=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Specific music theory collections
+    match /music_theory/scales/{scaleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /music_theory/chords/{chordId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /music_theory/progressions/{progId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /music_theory/instruments/{instrumentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /music_theory/partimento_rules/{ruleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /music_theory/counterpoint_rules/{ruleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ============================================================================
+    // PUBLIC ARRANGEMENTS (across all users)
+    // ============================================================================
+
+    match /public_arrangements/{arrangementId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.uid == request.auth.uid;
     }
   }
 }

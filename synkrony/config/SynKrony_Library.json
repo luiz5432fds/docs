@@ -1,0 +1,286 @@
+{
+  "version": "1.0.0",
+  "name": "SynKrony Library - Complete Musical Ecosystem",
+  "description": "Configuration for SynKrony AI Music Production System integrating Yamaha MM8, Roland XPS-10, Reaper, and MuseScore",
+
+  "hardware_setup": {
+    "yamaha_mm8": {
+      "name": "Yamaha MM8",
+      "role": "master_clock_and_bass",
+      "midi_channel": 1,
+      "capabilities": {
+        "master_clock": true,
+        "transport_control": true,
+        "midi_thru": true
+      },
+      "cc_mappings": {
+        "volume": 7,
+        "pan": 10,
+        "expression": 11,
+        "sustain": 64,
+        "portamento": 65
+      },
+      "sysex_id": "43"
+    },
+    "roland_xps10": {
+      "name": "Roland XPS-10",
+      "role": "leads_and_pads",
+      "midi_channel": 2,
+      "capabilities": {
+        "layer_mode": true,
+        "performance_mode": true,
+        "sysex_edit": true
+      },
+      "cc_mappings": {
+        "bank_select_msb": 0,
+        "modulation": 1,
+        "breath": 2,
+        "volume": 7,
+        "pan": 10,
+        "expression": 11,
+        "sustain": 64,
+        "portamento": 65,
+        "filter_cutoff": 74,
+        "resonance": 71,
+        "release": 72,
+        "attack": 73,
+        "decay": 74,
+        "vibrato_rate": 76,
+        "vibrato_depth": 77,
+        "vibrato_delay": 78
+      },
+      "sysex_id": "41"
+    }
+  },
+
+  "genre_presets": {
+    "brega_romantico": {
+      "name": "Brega Romântico",
+      "tempo_range": [85, 105],
+      "time_signature": [4, 4],
+      "typical_keys": ["C", "G", "F", "Eb", "Bb"],
+      "partimento_schema": "Rule_of_Octave_Modified",
+      "hardware_targets": {
+        "leads": "xps10",
+        "pads": "xps10",
+        "bass": "mm8"
+      },
+      "xps10_presets": [
+        "SynKrony_Brega_Lead",
+        "SynKrony_Brega_Pad",
+        "SynKrony_Brega_Brass"
+      ],
+      "vst_presets": [
+        "SynKrony_Piano_Liner",
+        "XPS10_Brass_Stack",
+        "Brega_String_Ensemble"
+      ],
+      "mix_settings": {
+        "reverb_damp": 2000,
+        "reverb_decay": 2.5,
+        "compression_ratio": 4,
+        "stereo_width": 80,
+        "bass_boost": 3
+      },
+      "regional_adaptations": {
+        "use_suspended_sevenths": true,
+        "delayed_resolutions": true,
+        "lush_pad_layers": true
+      }
+    },
+    "forro_piseiro": {
+      "name": "Forró Piseiro",
+      "tempo_range": [155, 175],
+      "time_signature": [2, 4],
+      "typical_keys": ["C", "G", "D"],
+      "partimento_schema": "forro_baião",
+      "hardware_targets": {
+        "leads": "xps10",
+        "rhythm": "mm8",
+        "bass": "mm8"
+      },
+      "xps10_presets": [
+        "SynKrony_Sanfona",
+        "SynKrony_Pifano",
+        "SynKrony_Forro_Percussion"
+      ],
+      "vst_presets": [
+        "Sanfona_Accordion",
+        "Pifano_Flite",
+        "Zabumba_Kick",
+        "Triangle_Hats"
+      ],
+      "mix_settings": {
+        "reverb_damp": 3000,
+        "reverb_decay": 1.5,
+        "compression_ratio": 3,
+        "stereo_width": 60,
+        "bass_boost": 6
+      },
+      "regional_adaptations": {
+        "syncopation_strength": 0.5,
+        "swing_amount": 0.25,
+        "accent_pattern": [1.0, 0.3, 0.8, 0.3]
+      }
+    },
+    "forro_baião": {
+      "name": "Forró Baião",
+      "tempo_range": [95, 115],
+      "time_signature": [2, 4],
+      "typical_keys": ["C", "G", "F", "D"],
+      "partimento_schema": "baiao",
+      "hardware_targets": {
+        "leads": "xps10",
+        "rhythm": "mm8",
+        "bass": "mm8"
+      },
+      "xps10_presets": [
+        "SynKrony_Baião_Sanfona",
+        "SynKrony_Cavaquinho"
+      ],
+      "vst_presets": [
+        "Gonzaga_Sanfona",
+        "Traditional_Pifano"
+      ],
+      "mix_settings": {
+        "reverb_damp": 2500,
+        "reverb_decay": 1.8,
+        "compression_ratio": 3.5,
+        "stereo_width": 50,
+        "bass_boost": 4
+      },
+      "regional_adaptations": {
+        "syncopation_strength": 0.3,
+        "swing_amount": 0.2
+      }
+    },
+    "tecnobrega": {
+      "name": "Tecnobrega",
+      "tempo_range": [125, 145],
+      "time_signature": [4, 4],
+      "typical_keys": ["Cm", "Gm", "Dm"],
+      "partimento_schema": "tecnobrega_bass",
+      "hardware_targets": {
+        "leads": "xps10",
+        "pads": "xps10",
+        "bass": "xps10"
+      },
+      "xps10_presets": [
+        "SynKrony_TB_Lead",
+        "SynKrony_TB_Pad",
+        "SynKrony_TB_Bass"
+      ],
+      "vst_presets": [
+        "TB_808_Kick",
+        "TB_Analog_Bass",
+        "TB_Pad_Synth"
+      ],
+      "mix_settings": {
+        "reverb_damp": 1500,
+        "reverb_decay": 3.0,
+        "compression_ratio": 6,
+        "stereo_width": 100,
+        "bass_boost": 8,
+        "sidechain_threshold": -20
+      },
+      "regional_adaptations": {
+        "electronic_emphasis": true,
+        "sub_bass": true,
+        "stereo_width": 100
+      }
+    }
+  },
+
+  "partimento_rules": {
+    "rule_of_octave_major": {
+      "name": "Regra da Oitava (Maior)",
+      "voicings": {
+        "0": [0, 4, 7],
+        "1": [2, 5, 9],
+        "2": [4, 7, 11],
+        "3": [5, 9, 12],
+        "4": [7, 11, 14],
+        "5": [9, 12, 16],
+        "6": [11, 14, 17]
+      }
+    },
+    "rule_of_octave_minor": {
+      "name": "Regra da Oitava (Menor)",
+      "voicings": {
+        "0": [0, 3, 7],
+        "1": [2, 5, 8],
+        "2": [3, 7, 10],
+        "3": [5, 8, 12],
+        "4": [7, 10, 14],
+        "5": [8, 12, 15],
+        "6": [11, 14, 17]
+      }
+    }
+  },
+
+  "counterpoint_rules": {
+    "species_1": {
+      "name": "Primeira Espécie (Nota contra Nota)",
+      "rules": [
+        "Proibir quintas paralelas",
+        "Proibir oitavas paralelas",
+        "Movimento contrário preferido"
+      ]
+    },
+    "species_2": {
+      "name": "Segunda Espécie (Seminínimas contra Semínimas)",
+      "rules": [
+        "Tempos fortes: consonância obrigatória",
+        "Tempos fracos: dissonância permitida (nota de passagem)"
+      ]
+    },
+    "dufay_rules": {
+      "name": "Regras de Dufay",
+      "rules": [
+        "Resolver sensível ascendente ao tônico",
+        "Evitar movimentos diretos a consonâncias perfeitas",
+        "Preferir movimento contrário"
+      ]
+    }
+  },
+
+  "instrumentation": {
+    "brega": {
+      "rhythm": ["piano", "organ", "guitar"],
+      "harmony": ["piano", "organ", "strings", "brass"],
+      "melody": ["saxophone", "trumpet", "vocals", "synth_lead"],
+      "bass": ["synth_bass", "double_bass", "mm8_bass"]
+    },
+    "forro": {
+      "rhythm": ["zabumba", "triangle"],
+      "harmony": ["sanfona", "cavaquinho", "pifano", "acoustic_guitar"],
+      "melody": ["sanfona", "pifano", "flute", "vocals"],
+      "bass": ["zabumba", "mm8_bass"]
+    },
+    "tecnobrega": {
+      "rhythm": ["808_kick", "808_snare", "808_hats"],
+      "harmony": ["synth_pad", "synth_lead"],
+      "melody": ["synth_lead", "vocals"],
+      "bass": ["808_bass", "sub_bass", "xps10_bass"]
+    }
+  },
+
+  "daw_integration": {
+    "reaper": {
+      "script_path": "resources/reaper-scripts/SK_Core.lua",
+      "midi_export_format": "mid",
+      "project_extension": ".rpp"
+    },
+    "musescore": {
+      "export_format": "musicxml",
+      "file_extension": ".musicxml",
+      "version": "4.0"
+    }
+  },
+
+  "midi_settings": {
+    "ticks_per_quarter": 960,
+    "default_tempo": 120,
+    "default_time_signature": [4, 4]
+  }
+}
