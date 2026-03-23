@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'synthesis_help_sheet.dart';
+import '../../widgets/export_midi_button.dart';
+import '../../widgets/import_musicxml_button.dart';
+import '../../models/patch_model.dart';
+import '../reaper_import/reaper_import_screen.dart';
 
 class EditorPage extends StatefulWidget {
   const EditorPage({super.key});
@@ -13,6 +17,22 @@ class _EditorPageState extends State<EditorPage> {
   double morph = 0;
   bool safetyLock = false;
   bool freeze = false;
+
+  // Criar PatchModel atual para exportação
+  PatchModel get currentPatch => PatchModel(
+        name: 'Current Patch',
+        category: 'SYN',
+        tags: ['custom'],
+        macro: {
+          'filterCutoff': cutoff,
+          'filterResonance': resonance,
+          'envAttack': attack,
+          'envRelease': release,
+          'chorusRate': chorus,
+          'reverbLevel': reverb,
+        },
+        panel: {},
+      );
 
   Widget knob(String label, double value, ValueChanged<double> onChanged, {double max = 127}) {
     return SizedBox(
@@ -30,11 +50,34 @@ class _EditorPageState extends State<EditorPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Editor Juno / Painel XPS-10'),
           actions: [
+            // Exportar MIDI
+            ExportMidiButton(
+              patch: currentPatch,
+              customFileName: 'XPS10_${DateTime.now().millisecondsSinceEpoch}',
+            ),
+            // Importar MusicXML
+            IconButton(
+              tooltip: 'Importar MusicXML (MuseScore)',
+              onPressed: () => _showImportOptions(context),
+              icon: const Icon(Icons.upload_file),
+            ),
+            // Importar projeto Reaper
+            IconButton(
+              tooltip: 'Importar projeto Reaper',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ReaperImportScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.folder_open),
+            ),
+            // Ajuda
             IconButton(
               tooltip: 'Ajuda de síntese, mixagem e uso ao vivo',
               onPressed: () => showModalBottomSheet(
@@ -43,10 +86,14 @@ class _EditorPageState extends State<EditorPage> {
                 builder: (_) => const SynthesisHelpSheet(),
               ),
               icon: const Icon(Icons.help_outline),
-            )
+            ),
           ],
-          bottom: const TabBar(tabs: [Tab(text: 'Painel'), Tab(text: 'Variações'), Tab(text: 'MORPH')]),
-        ),
+          bottom: const TabBar(tabs: [
+            Tab(text: 'Painel'),
+            Tab(text: 'Variações'),
+            Tab(text: 'MORPH'),
+            Tab(text: 'Importar'),
+          ])),
         body: TabBarView(
           children: [
             ListView(
@@ -93,7 +140,146 @@ class _EditorPageState extends State<EditorPage> {
                 Slider(value: morph, max: 100, onChanged: (v) => setState(() => morph = v)),
                 Text('Valor atual: ${morph.toStringAsFixed(0)}'),
               ]),
-            )
+            ),
+            // Aba Importar
+            ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const Text(
+                  'Importar de outras DAWs e editores',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _importOptionCard(
+                  icon: Icons.picture_as_pdf,
+                  title: 'MuseScore (MusicXML)',
+                  description: 'Importe partituras do MuseScore como patches do XPS-10',
+                  onTap: () => _showImportOptions(context),
+                ),
+                const SizedBox(height: 12),
+                _importOptionCard(
+                  icon: Icons.folder_open,
+                  title: 'Reaper (.rpp)',
+                  description: 'Importe projetos Reaper e converta tracks em patches',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ReaperImportScreen(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Exportar patch atual',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _exportOptionCard(
+                  icon: Icons.music_note,
+                  title: 'Exportar MIDI',
+                  description: 'Exporte para Reaper, Ableton, ou qualquer DAW',
+                  onTap: () => _showExportOptions(context),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _importOptionCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, size: 32),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(description),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _exportOptionCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, size: 32),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(description),
+        trailing: const Icon(Icons.download, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  void _showImportOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Importar MusicXML',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ImportMusicxmlButton(
+              showFullPreview: true,
+              buttonText: 'Selecionar arquivo .xml/.mxl',
+              onPatchesImported: (patches) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${patches.length} patches importados com sucesso'),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showExportOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Exportar MIDI',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Patch: ${currentPatch.name}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            ExportMidiButton(
+              patch: currentPatch,
+              showFullOptions: true,
+              onExportComplete: () {
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
