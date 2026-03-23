@@ -3,6 +3,7 @@ import {onDocumentWritten} from 'firebase-functions/v2/firestore';
 import {onObjectFinalized} from 'firebase-functions/v2/storage';
 import {onCall, HttpsError} from 'firebase-functions/v2/https';
 import {runAgentsOrchestrator} from './orchestrator';
+import {runSynKronyOrchestrator, runSynKronyAgent} from './orchestrator';
 import {ingestPdfFromStorage} from './kb/pdf_ingest';
 import {searchKbChunks} from './kb/search';
 import {fmSignal, granularOverlay, karplusStrong, normalize, peakFilterCoefficient, phaseAccumulatorSaw} from './synthesis/algorithms';
@@ -11,6 +12,7 @@ import {mapGestureToXps10} from './synthesis/gesture_engine';
 import {brassFmRecommendation, buildInvisibleMixPreset} from './synthesis/mix_bus';
 import {jitterDriftPreset, mapRealismToolkit} from './synthesis/realism_toolkit';
 import {driftLfoGuide, laWaveformGuide, metalAttackAsyncGuide, ringModProgrammingGuide, stringAftertouchCurves} from './synthesis/xps10_programming';
+import {seedMusicTheory} from './scripts/seed_music_theory';
 
 admin.initializeApp();
 
@@ -365,5 +367,149 @@ export const onPatchWrite = onDocumentWritten('users/{uid}/patches/{patchId}', a
     }, {merge: true});
   } else {
     await pubRef.delete().catch(() => undefined);
+  }
+});
+
+// ============================================================================
+// SYNCRONY MULTI-AGENT MUSIC PRODUCTION SYSTEM
+// ============================================================================
+
+/**
+ * Run the complete SynKrony orchestrator
+ * Generates a full musical composition with arrangement and export files
+ */
+export const runSynKrony = onCall(async (request) => {
+  const uid = assertAuth(request);
+  return runSynKronyOrchestrator(uid, request.data ?? {});
+});
+
+/**
+ * Run an individual SynKrony agent
+ */
+export const runSynKronySingleAgent = onCall(async (request) => {
+  assertAuth(request);
+  const agent = String(request.data?.agent ?? '');
+  if (!agent) throw new HttpsError('invalid-argument', 'agent é obrigatório.');
+  return runSynKronyAgent(agent, request.data ?? {});
+});
+
+/**
+ * Get music theory data from Firestore
+ */
+export const getMusicTheory = onCall(async (request) => {
+  assertAuth(request);
+  const type = String(request.data?.type ?? '');
+  const id = String(request.data?.id ?? '');
+
+  if (!type) throw new HttpsError('invalid-argument', 'type é obrigatório.');
+
+  const collection = admin.firestore().collection('music_theory').doc(type).collection('items');
+  const ref = id ? collection.doc(id) : collection;
+
+  const snapshot = await ref.limit(id ? 1 : 100).get();
+
+  if (id && snapshot.empty) {
+    throw new HttpsError('not-found', `${type} com id ${id} não encontrado.`);
+  }
+
+  return {
+    items: snapshot.docs.map(doc => ({id: doc.id, ...doc.data()})),
+  };
+});
+
+/**
+ * Get genre template
+ */
+export const getGenreTemplate = onCall(async (request) => {
+  assertAuth(request);
+  const genre = String(request.data?.genre ?? 'brega_romantico');
+
+  const doc = await admin.firestore()
+    .collection('music_theory')
+    .doc('genre_templates')
+    .collection('items')
+    .doc(genre)
+    .get();
+
+  if (!doc.exists) {
+    throw new HttpsError('not-found', `Genre template ${genre} não encontrado.`);
+  }
+
+  return {template: doc.data()};
+});
+
+/**
+ * Create a new SynKrony project
+ */
+export const createSynKronyProject = onCall(async (request) => {
+  const uid = assertAuth(request);
+  const project = request.data?.project ?? {};
+
+  const projectRef = admin.firestore().collection('users').doc(uid).collection('synkrony_projects').doc();
+  const projectId = projectRef.id;
+
+  await projectRef.set({
+    ...project,
+    id: projectId,
+    uid,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  return {projectId, project: {id: projectId, ...project}};
+});
+
+/**
+ * Get PNAB 2026 metrics for a project
+ */
+export const getPNABMetrics = onCall(async (request) => {
+  assertAuth(request);
+  const projectId = String(request.data?.projectId ?? '');
+  if (!projectId) throw new HttpsError('invalid-argument', 'projectId é obrigatório.');
+
+  const doc = await admin.firestore()
+    .collection('users')
+    .doc(request.auth!.uid)
+    .collection('synkrony_projects')
+    .doc(projectId)
+    .get();
+
+  if (!doc.exists) {
+    throw new HttpsError('not-found', `Projeto ${projectId} não encontrado.`);
+  }
+
+  const data = doc.data();
+  const metrics = {
+    cultural_impact: data?.cultural_impact ?? 0,
+    regional_preservation: data?.regional_preservation ?? 0,
+    community_beneficiaries: data?.community_beneficiaries ?? 0,
+    genre: data?.genre ?? '',
+    region: data?.region ?? '',
+  };
+
+  return {metrics};
+});
+
+/**
+ * Admin function: Seed music theory data
+ * Requires admin claims
+ */
+export const adminSeedMusicTheory = onCall(async (request) => {
+  const uid = assertAuth(request);
+
+  // Check if user is admin (in production, verify custom claims)
+  const userRecord = await admin.auth().getUser(uid);
+  if (!userRecord.customClaims?.admin) {
+    throw new HttpsError('permission-denied', 'Apenas administradores podem executar seed.');
+  }
+
+  try {
+    const result = await seedMusicTheory();
+    return {
+      success: true,
+      seeded: result,
+    };
+  } catch (error: any) {
+    throw new HttpsError('internal', `Erro ao executar seed: ${error.message}`);
   }
 });

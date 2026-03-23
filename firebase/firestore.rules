@@ -1,37 +1,98 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
+    // EXISTING: Devices configuration
     match /devices/{deviceId} {
       allow read: if true;
       allow write: if false;
     }
 
-    match /users/{uid} {
-      allow read, write: if isOwner(uid);
-      match /{document=**} {
-        allow read, write: if isOwner(uid);
+    // EXISTING: Users collection
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // EXISTING: Patches
+      match /patches/{patchId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // EXISTING: Setlists
+      match /setlists/{setlistId} {
+        allow read, write: if isOwner(userId);
+        match /items/{itemId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // NEW: SynKrony Projects
+      match /synkrony_projects/{projectId} {
+        allow read, write: if isOwner(userId);
+        match /tracks/{trackId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // NEW: Scores (partituras)
+      match /scores/{scoreId} {
+        allow read: if isOwner(userId) || resource.data.isPublic == true;
+        allow write: if isOwner(userId);
+        match /parts/{partId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // NEW: Arrangements (arranjos)
+      match /arrangements/{arrangementId} {
+        allow read: if isOwner(userId) || resource.data.isPublic == true;
+        allow write: if isOwner(userId);
+        match /sections/{sectionId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      // NEW: Hardware configs
+      match /hardware_configs/{configId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // EXISTING: Knowledge base
+      match /kb_docs/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /kb_chunks/{chunkId} {
+        allow read, write: if isOwner(userId);
       }
     }
 
-    match /kb_docs/{docId} {
-      allow read, write: if isSignedIn() && request.auth.uid == resource.data.uid;
-      allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
-    }
-
-    match /kb_chunks/{chunkId} {
-      allow read, write: if isSignedIn() && request.auth.uid == resource.data.uid;
-      allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
-    }
-
+    // EXISTING: Public patches
     match /publicPatches/{patchId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // NEW: SynKrony public templates (read-only)
+    match /synkrony/genre_templates/{templateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // NEW: SynKrony hardware presets (read-only)
+    match /synkrony/hardware_presets/{presetId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // NEW: Music theory data (public, read-only)
+    match /music_theory/{doc=**} {
       allow read: if true;
       allow write: if false;
     }
