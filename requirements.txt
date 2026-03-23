@@ -1,0 +1,41 @@
+# AI Maestro - Python Requirements
+
+# LangChain for RAG
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-google-genai>=0.0.6
+
+# Vector store
+faiss-cpu>=1.7.4
+
+# PDF processing
+pypdf>=3.17.0
+PyPDF2>=3.0.1
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.1
+numpy>=1.24.0
+
+# YouTube download
+yt-dlp>=2023.12.30
+
+# Google AI
+google-generativeai>=0.3.0
+
+# Optional local embeddings
+sentence-transformers>=2.2.2
+transformers>=4.35.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Notebooks for testing (optional)
+jupyter>=1.0.0
+ipython>=8.18.0
+
+# Web API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
