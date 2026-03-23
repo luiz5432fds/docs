@@ -1,0 +1,257 @@
+{
+  "version": "1.0.0",
+  "name": "SynKrony Library Configuration",
+  "description": "Complete configuration for SynKrony music production ecosystem",
+  "hardware_setup": {
+    "yamaha_mm8": {
+      "name": "Yamaha MM8",
+      "role": "master_clock_and_bass",
+      "midi_channel": 1,
+      "midi_id": 0,
+      "capabilities": {
+        "master_clock": true,
+        "transport_control": true,
+        "note_range": [21, 96],
+        "aftertouch": true
+      },
+      "cc_mappings": {
+        "cutoff": 74,
+        "resonance": 71,
+        "volume": 7,
+        "pan": 10,
+        "reverb": 91,
+        "chorus": 93
+      },
+      "sysex_id": "0x43 0x10 0x4C 0x00"
+    },
+    "roland_xps10": {
+      "name": "Roland XPS-10",
+      "role": "leads_and_pads",
+      "midi_channel": 2,
+      "midi_id": 1,
+      "capabilities": {
+        "local_control": true,
+        "sysex_enabled": true,
+        "note_range": [36, 96],
+        "aftertouch": true
+      },
+      "cc_mappings": {
+        "cutoff": 74,
+        "resonance": 71,
+        "attack": 73,
+        "release": 72,
+        "volume": 7,
+        "pan": 10,
+        "reverb_send": 91,
+        "chorus_send": 93
+      },
+      "sysex_id": "0xF0 0x41 0x10 0x00 0x6B 0x12"
+    }
+  },
+  "genre_presets": {
+    "brega_romantico": {
+      "name": "Brega Romântico",
+      "tempo_range": [85, 105],
+      "time_signature": [4, 4],
+      "partimento_schema": "Rule_of_Octave_Modified",
+      "hardware": {
+        "mm8": {
+          "patch": "Acoustic Bass",
+          "volume": 100,
+          "reverb": 40
+        },
+        "xps10": {
+          "patch": "Strings Layer",
+          "volume": 90,
+          "reverb": 60,
+          "chorus": 45
+        }
+      },
+      "arrangement": {
+        "density": "medium",
+        "instruments": ["piano", "strings", "saxophone", "double_bass"],
+        "voicing_style": "spread_emotional",
+        "retardos": [4, 3, 9, 8]
+      },
+      "vst_presets": ["SynKrony_Piano_Liner", "XPS10_Brass_Stack", "SynKrony_Strings_Pad"]
+    },
+    "forro_piseiro": {
+      "name": "Forró Piseiro",
+      "tempo_range": [155, 175],
+      "time_signature": [4, 4],
+      "partimento_schema": "Forro_Baiao",
+      "hardware": {
+        "mm8": {
+          "patch": "Acoustic Bass",
+          "volume": 110,
+          "reverb": 20
+        },
+        "xps10": {
+          "patch": "Accordion",
+          "volume": 95,
+          "reverb": 30,
+          "chorus": 25
+        }
+      },
+      "arrangement": {
+        "density": "thin",
+        "instruments": ["sanfona", "zabumba", "triangulo", "pifano"],
+        "voicing_style": "shell_rhythm",
+        "syncopation": 0.4
+      },
+      "vst_presets": ["SynKrony_Accordion", "SynKrony_Zabumba", "SynKrony_Triangulo"]
+    },
+    "tecnobrega": {
+      "name": "Tecnobrega",
+      "tempo_range": [120, 135],
+      "time_signature": [4, 4],
+      "partimento_schema": "Tecnobrega",
+      "hardware": {
+        "mm8": {
+          "patch": "Synth Bass",
+          "volume": 120,
+          "reverb": 10
+        },
+        "xps10": {
+          "patch": "Lead Synth",
+          "volume": 100,
+          "reverb": 20,
+          "chorus": 35
+        }
+      },
+      "arrangement": {
+        "density": "thick",
+        "instruments": ["synth_bass", "synth_lead", "synth_pad", "drums_808"],
+        "voicing_style": "electronic_dense",
+        "quantization": "strict"
+      },
+      "vst_presets": ["SynKrony_Sub_Bass", "SynKrony_Electro_Lead", "SynKrony_808_Kit"]
+    },
+    "pop_nacional": {
+      "name": "Pop Nacional",
+      "tempo_range": [100, 130],
+      "time_signature": [4, 4],
+      "partimento_schema": "Rule_of_Octave",
+      "hardware": {
+        "mm8": {
+          "patch": "Electric Bass",
+          "volume": 105,
+          "reverb": 25
+        },
+        "xps10": {
+          "patch": "Pop Piano",
+          "volume": 95,
+          "reverb": 35,
+          "chorus": 20
+        }
+      },
+      "arrangement": {
+        "density": "medium",
+        "instruments": ["piano", "guitar", "bass", "drums", "strings"],
+        "voicing_style": "contemporary_pop"
+      },
+      "vst_presets": ["SynKrony_Pop_Piano", "SynKrony_Studio_Bass", "SynKrony_Pop_Drums"]
+    }
+  },
+  "partimento_schemas": {
+    "Rule_of_Octave": {
+      "name": "Regra da Oitava",
+      "description": "Standard partimento realization following the Rule of the Octave",
+      "source": "Fenaroli",
+      "degrees": {
+        "I": {"voicing": [0, 4, 7], "function": "tonic"},
+        "II": {"voicing": [0, 3, 7], "function": "subdominant_prep"},
+        "III": {"voicing": [0, 4, 7], "function": "mediant"},
+        "IV": {"voicing": [0, 4, 7], "function": "subdominant"},
+        "V": {"voicing": [0, 4, 7, 10], "function": "dominant"},
+        "VI": {"voicing": [0, 3, 7], "function": "submediant"},
+        "VII": {"voicing": [0, 3, 6], "function": "leading_tone"}
+      }
+    },
+    "Rule_of_Octave_Modified": {
+      "name": "Regra da Oitava Modificada",
+      "description": "Modified Rule of the Octave for Brega Romântico",
+      "source": "Brega Tradition",
+      "degrees": {
+        "I": {"voicing": [0, 12, 19, 24], "function": "tonic_spread"},
+        "II": {"voicing": [0, 3, 7], "function": "subdominant"},
+        "III": {"voicing": [0, 4, 7, 10], "function": "secondary_dominant"},
+        "IV": {"voicing": [0, 4, 7, 11], "function": "subdominant_maj7"},
+        "V": {"voicing": [0, 4, 7, 10], "function": "dominant"},
+        "VI": {"voicing": [0, 4, 7, 10], "function": "emotional_dom7"},
+        "VII": {"voicing": [0, 3, 6], "function": "leading_tone"}
+      }
+    },
+    "Forro_Baiao": {
+      "name": "Baião Pattern",
+      "description": "Simplified harmonic pattern for Forró Baião",
+      "source": "Northeast Tradition",
+      "degrees": {
+        "I": {"voicing": [0, 7, 12], "function": "tonic_shell"},
+        "IV": {"voicing": [0, 7, 12], "function": "subdominant_shell"},
+        "V": {"voicing": [0, 10, 12], "function": "dominant_shell"}
+      }
+    },
+    "Tecnobrega": {
+      "name": "Andróginas Pattern",
+      "description": "Minor-based progression for Tecnobrega",
+      "source": "Pará Tradition",
+      "degrees": {
+        "i": {"voicing": [0, 3, 7], "function": "tonic_minor"},
+        "VI": {"voicing": [0, 4, 7], "function": "relative_major"},
+        "III": {"voicing": [0, 4, 7], "function": "mediant_major"},
+        "VII": {"voicing": [0, 3, 6], "function": "subtonic_dim"}
+      }
+    }
+  },
+  "counterpoint_rules": {
+    "dufay": {
+      "species": [1, 2, 3, 4, 5],
+      "forbidden": {
+        "parallel_fifths": true,
+        "parallel_octaves": true,
+        "tritone": "unless prepared"
+      },
+      "required": {
+        "contrary_motion": "preferable",
+        "resolution_preparation": "for dissonances"
+      },
+      "regional_exceptions": {
+        "brega": {
+          "parallel_fifths": "allowed_for_nostalgia",
+          "retardos": "encouraged_4-3_and_9-8"
+        },
+        "forro": {
+          "parallel_fifths": "allowed_in_rhythm",
+          "syncopation": "encouraged"
+        }
+      }
+    }
+  },
+  "midi_settings": {
+    "ticks_per_beat": 960,
+    "default_velocity": 80,
+    "default_duration": 480,
+    "quantization": "off"
+  },
+  "daw_integration": {
+    "reaper": {
+      "rpp_format": "7.09",
+      "midi_import": true,
+      "midi_export": true,
+      "lua_scripts_path": "functions/resources/reaper-scripts/"
+    },
+    "musescore": {
+      "musicxml_version": "3.1",
+      "import_path": "",
+      "export_format": "musicxml"
+    }
+  },
+  "paths": {
+    "reaper_scripts": "functions/resources/reaper-scripts/",
+    "vst_plugins": "synkrony/vst/",
+    "configuration": "synkrony/config/",
+    "exports": "exports/",
+    "temp": "temp/"
+  }
+}

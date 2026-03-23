@@ -29,6 +29,8 @@ dependencies:
   # Audio export
   flutter_sound: ^9.6.0
   permission_handler: ^11.3.1
+  # Local database
+  sqflite: ^2.3.0
 
 dev_dependencies:
   flutter_test:

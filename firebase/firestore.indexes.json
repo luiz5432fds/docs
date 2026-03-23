@@ -4,25 +4,82 @@
       "collectionGroup": "patches",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "favorite", "order": "DESCENDING" },
-        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+        {"fieldPath": "favorite", "order": "DESCENDING"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
       ]
     },
     {
       "collectionGroup": "publicPatches",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "likes", "order": "DESCENDING" },
-        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+        {"fieldPath": "likes", "order": "DESCENDING"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
       ]
     },
     {
       "collectionGroup": "kb_chunks",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "uid", "order": "ASCENDING" },
-        { "fieldPath": "docId", "order": "ASCENDING" },
-        { "fieldPath": "chunkIndex", "order": "ASCENDING" }
+        {"fieldPath": "uid", "order": "ASCENDING"},
+        {"fieldPath": "docId", "order": "ASCENDING"},
+        {"fieldPath": "chunkIndex", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "synkrony_projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "genre", "order": "ASCENDING"},
+        {"fieldPath": "updatedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "synkrony_projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "partimento_enabled", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "arrangements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "isPublic", "order": "ASCENDING"},
+        {"fieldPath": "genre", "order": "ASCENDING"},
+        {"fieldPath": "createdAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "scales",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "type", "order": "ASCENDING"},
+        {"fieldPath": "root", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "chords",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "type", "order": "ASCENDING"},
+        {"fieldPath": "root", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "instruments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "family", "order": "ASCENDING"},
+        {"fieldPath": "name.pt", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "genre_templates",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "category", "order": "ASCENDING"},
+        {"fieldPath": "name", "order": "ASCENDING"}
       ]
     }
   ],
