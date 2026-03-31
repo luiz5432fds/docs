@@ -30,7 +30,8 @@
               "essentials/settings",
               "essentials/navigation",
               "essentials/reusable-snippets",
-              "piano-teacher"
+              "piano-teacher",
+              "essentials/mzx500-firmware-reverse-engineering"
             ]
           }
         ]
