@@ -1,0 +1,297 @@
+---
+title: "Reengenharia de firmware do MZ-X500"
+description: "Estudo técnico do firmware 1.60 e plano de reengenharia orientado por queixas reais de usuários"
+---
+
+## Escopo
+
+Este documento foi reestruturado para responder ao objetivo prático:
+
+1. **estudar tecnicamente o firmware do MZ-X500 (update 1.60)**,
+2. **organizar queixas reais de usuários**, e
+3. definir um caminho de **firmware melhorada** com foco em estabilidade, sampler e preload.
+
+<Info>
+Use este guia apenas para pesquisa em equipamento próprio, respeitando leis locais, licenças e direitos autorais.
+</Info>
+
+## Estudo inicial já consolidado (pacote 1.60)
+
+### Artefato analisado
+
+- Arquivo de atualização: `update.bin`
+- Tamanho esperado: aproximadamente `250.363.980 bytes` (~238,7 MiB)
+- Assinatura/magic no início: `CMIF`
+
+### Interpretação técnica inicial
+
+- A presença de `CMIF` indica container de update da linha MZ-X.
+- Entropia muito alta ao longo do blob sugere **payload criptografado e/ou fortemente comprimido**.
+- Consequência prática: o pacote não se comporta como filesystem simples extraível por ferramentas genéricas.
+
+### Impressão digital (integridade)
+
+Para validação de cópia/transferência, mantenha hashes do arquivo oficial analisado:
+
+- `MD5: 79a83f9d4de1b456447fd359a61af5d6`
+- `SHA-256: da796d55d60e0e02f7f08edfdcc9f0f35858491de544cb76a9a9ee5f2c640b6f`
+
+## Comandos-base para repetir o estudo do pacote
+
+```bash
+sha256sum update.bin
+md5sum update.bin
+xxd -g 1 -l 64 update.bin
+strings -n 8 update.bin | head -n 200
+binwalk -e update.bin
+```
+
+Para estimativa de entropia por blocos:
+
+```bash
+python3 - <<'PY'
+import math
+from pathlib import Path
+
+def entropy(chunk: bytes) -> float:
+    if not chunk:
+        return 0.0
+    freq = [0]*256
+    for b in chunk:
+        freq[b]+=1
+    n = len(chunk)
+    return -sum((c/n)*math.log2(c/n) for c in freq if c)
+
+p = Path('update.bin')
+data = p.read_bytes()
+for label, start in [('inicio',0), ('meio',len(data)//2), ('fim',max(0,len(data)-1024*1024))]:
+    c = data[start:start+1024*1024]
+    print(label, f"H={entropy(c):.4f} bits/byte")
+PY
+```
+
+## Queixas reais a priorizar (foco do projeto)
+
+Com base em relatos recorrentes de usuários, priorize inicialmente:
+
+- limitação percebida no sampler/preload (expectativa de "250 MB reais" sem cortes)
+- travamentos ou instabilidades em uso de palco
+- lentidão/atraso em troca de timbres quando há conteúdo de usuário grande
+- inconsistências em fluxos de importação/uso de samples
+
+> Regra de ouro: só entra no backlog principal aquilo que for **reproduzível** em bancada.
+
+## Caso crítico: preload, cortes e “250 MB reais”
+
+## O que a documentação funcional sugere
+
+Os manuais de firmware descrevem:
+
+- existência de **PRELOAD SETTING** com indicador de `Free Space`
+- impacto de free space baixo no comportamento de seleção/carregamento
+- restrições de uso para certos tipos de amostra em contextos específicos
+
+Isso aponta para arquitetura com orçamento de memória controlado por política interna (não apenas um limite visual de UI).
+
+### Hipótese técnica mais provável
+
+A percepção de “corte” ou limitação pode vir da combinação de:
+
+1. limite por objeto de sample (ou por classe de sample),
+2. limite por banco/conjunto,
+3. orçamento de preload/cache em RAM,
+4. política de conversão interna (formato/taxa/estrutura).
+
+## Estratégia de reengenharia para o caso preload/sampler
+
+### Fase A — Sem patch (baseline funcional)
+
+Objetivo: medir gargalos reais sem alterar firmware.
+
+- medir tempo de boot com preload ligado/desligado
+- medir latência de troca de timbre em cenários com e sem preload
+- registrar consumo de free space reportado pela UI
+- variar tamanho e perfil dos samples importados
+
+### Fase B — Engenharia reversa orientada ao limite
+
+Objetivo: localizar no firmware as rotinas que implementam os limites.
+
+- localizar strings e fluxos associados a preload/free space
+- identificar funções de cálculo de tamanho de wave e orçamento
+- mapear verificações que rejeitam ou truncam cenários de sample
+- correlacionar com mudanças entre versões 1.40/1.50/1.60 (diff binário)
+
+### Fase C — Proposta de firmware melhorada
+
+Objetivo: aumentar capacidade útil sem quebrar estabilidade.
+
+Possíveis caminhos:
+
+1. ajustar política de preload (mais inteligente, não necessariamente maior)
+2. reduzir alocação pessimista por wave
+3. habilitar carregamento progressivo/streaming quando possível
+4. separar classes de cache por criticidade de performance
+
+> “Desbloquear 250 MB reais” pode exigir mais que alterar um número: pode envolver arquitetura de cache, tempo real de áudio e política de I/O.
+
+## Backlog técnico (template para execução)
+
+| Prioridade | Queixa | Evidência de campo | Hipótese técnica | Ação de engenharia | Critério de aceite |
+|---|---|---|---|---|---|
+| P0 | cortes/limites no sampler com preload | relatos + teste de bancada | orçamento de preload rígido | revisar cálculo de budget + política de cache | sem corte em cenário-alvo definido |
+| P0 | travamento em sessão longa | relatos de palco | corrida entre áudio/UI/I-O | refatorar sincronização + watchdog | 8h sem freeze |
+| P1 | lag na troca de timbre | testes reproduzíveis | carregamento síncrono pesado | prefetch + lazy load + warm cache | latência abaixo de meta definida |
+| P1 | inconsistência de importação sample | casos de erro | validação frágil de metadados | parser robusto + mensagens claras | taxa de falha reduzida com corpus de teste |
+| P2 | UX de diagnóstico fraca | dificuldade de suporte | códigos de erro pouco úteis | telemetria local + códigos de falha | suporte reproduz problema em menos tempo |
+
+
+## Ambiente com IA embarcada para acelerar a reengenharia
+
+A forma mais segura de "IA embarcada" neste projeto é usar um **nó auxiliar dedicado** (mini-PC, Jetson ou Raspberry Pi 5) ligado à bancada, em vez de tentar rodar IA dentro do teclado.
+
+### Arquitetura recomendada
+
+- **Nó de coleta**: captura UART/JTAG/logs e snapshots de binários.
+- **Nó de IA local**: LLM local para classificar queixas, sugerir hipóteses e gerar diffs de firmware candidatos.
+- **Nó de validação**: executa testes repetíveis (latência, estabilidade, import de samples).
+
+### Hardware mínimo sugerido
+
+- Raspberry Pi 5 (8 GB) ou Jetson Orin Nano
+- SSD NVMe/USB 512 GB
+- USB-UART 3.3V + analisador lógico
+- Rede local isolada para laboratório
+
+### Stack de software (offline-first)
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv git binwalk gdb-multiarch radare2 sigrok-cli
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull qwen2.5-coder:7b
+```
+
+### Serviços do laboratório (sugestão)
+
+- `collector`: ingere logs UART e metadados de testes.
+- `indexer`: indexa firmware, strings e diffs por versão.
+- `analyst-llm`: responde perguntas técnicas e gera hipóteses sobre limites (preload/sampler).
+- `triage`: transforma relatos de usuários em backlog P0/P1/P2.
+
+### Pipeline prático de IA embarcada
+
+1. Capturar logs e métricas de sessão real (boot, troca de timbre, import sample).
+2. Indexar artefatos (`update.bin`, dumps, strings, hashes).
+3. Pedir ao LLM local correlação entre queixa e módulo provável.
+4. Gerar hipótese técnica e experimento de validação.
+5. Rodar teste automático e registrar resultado com evidência.
+
+### Exemplo de prompt para o agente local
+
+```text
+Você é um analista de firmware do MZ-X500.
+Entrada: logs UART, diff binário 1.50->1.60, métrica de latência de troca de timbre, queixa de corte no sampler.
+Saída: (1) hipótese técnica prioritária, (2) função/região provável no firmware, (3) experimento reproduzível, (4) risco de brick.
+```
+
+### Política de segurança do ambiente
+
+- Nunca gravar patch direto sem dump completo validado por hash.
+- Cada experimento deve ter rollback definido antes da execução.
+- Separar claramente ambiente de análise e ambiente de gravação.
+- Manter trilha auditável: `queixa -> hipótese -> teste -> evidência -> decisão`.
+
+## Método técnico completo (do menos invasivo ao mais invasivo)
+
+### 1) Coleta de versões e hashing
+
+```bash
+sha256sum MZX500_*.bin > hashes.txt
+```
+
+### 2) Triagem de container
+
+```bash
+binwalk -e MZX500_update.bin
+strings -n 8 MZX500_update.bin | head -n 200
+xxd -g 1 -l 512 MZX500_update.bin
+```
+
+### 3) Identificação de arquitetura/SoC
+
+- inspeção física de placa
+- teardown/fotos técnicas
+- indicadores em strings/toolchain
+
+### 4) Mapeamento de funções críticas
+
+- boot/update
+- preload/sampler
+- parser de arquivos de usuário
+- MIDI/áudio/DSP
+- checks de integridade/assinatura
+
+### 5) Engenharia do pipeline de update
+
+1. detecção do pacote,
+2. validações,
+3. escrita em flash,
+4. rollback/recuperação.
+
+### 6) Hardware debug (UART/JTAG/SWD)
+
+- captura de logs de boot
+- identificação de modos de diagnóstico
+- confirmação de erros durante import/preload
+
+### 7) Dump e diff de flash
+
+```bash
+cmp -l flash_before.bin flash_after.bin | head
+binwalk flash_before.bin
+binwalk flash_after.bin
+```
+
+Comparar “antes/depois” de ações específicas (ex.: alterar preload, importar samples, atualizar firmware).
+
+## Plano de validação para firmware melhorada
+
+Cada correção precisa de:
+
+- cenário reproduzível documentado
+- métrica objetiva (tempo, estabilidade, falha)
+- teste de regressão equivalente
+
+### Matriz mínima
+
+- sessão contínua 4h e 8h com trocas de timbre/estilo
+- stress de MIDI IN/OUT concorrente
+- importação em lote de samples de tamanhos variados
+- ciclos de reboot para validar persistência
+- update + fallback/rollback em ambiente controlado
+
+## Risco e recuperação (anti-brick)
+
+Antes de qualquer tentativa de patch:
+
+- backup íntegro da flash (com hash)
+- procedimento de restauração testado
+- energia estável durante update/gravação
+- trilha de logs de cada experimento
+
+## Entregáveis de um ciclo de 30 dias
+
+- inventário de queixas reproduzíveis (com evidência)
+- mapa técnico do firmware (módulos e limites)
+- proposta de mudanças P0/P1/P2 para firmware v2
+- resultados de bancada com critérios de aceite
+- plano de release seguro (beta -> rc -> estável)
+
+## Próximo passo
+
+Se você quiser, o próximo documento pode ser um **plano diário de 30 dias** com:
+
+- planilha pronta de coleta de queixas,
+- protocolo de testes para preload/sampler,
+- e modelo de relatório “queixa -> hipótese -> patch -> evidência”.
