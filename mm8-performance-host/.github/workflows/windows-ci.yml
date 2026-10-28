@@ -1,0 +1,32 @@
+name: Windows Build and Tests
+
+on:
+  push:
+    branches: [ "main", "work" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bootstrap JUCE
+        shell: pwsh
+        run: |
+          .\scripts\bootstrap.ps1 -JuceDir "$env:GITHUB_WORKSPACE\deps\JUCE"
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DJUCE_DIR="$env:JUCE_DIR" -DMM8_BUILD_TESTS=ON
+
+      - name: Build
+        shell: pwsh
+        run: |
+          cmake --build build --config Release
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          ctest --test-dir build -C Release --output-on-failure
