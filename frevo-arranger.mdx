@@ -1,0 +1,60 @@
+---
+title: 'Frevo Arranger'
+description: 'Scripts and references for authentic frevo orchestration'
+---
+
+This guide outlines how to build a **frevo arranging tool** inside **Reaper**. The goal is to automate typical horn voicings and rhythm section setups inspired by the work of Spok, Marcos FM and Roque Neto. Use these ideas to script your own template and generate parts quickly.
+
+## Instrumentation
+
+A formação tradicional de frevo costuma incluir:
+
+- **Metais**: trompetes em uníssono ou em voicings abertos, trombones marcando a linha do baixo e saxofones para contramelodias.
+- **Base rítmica**: caixa, surdo, pratos e tambores adicionais que garantem o pulso acelerado (geralmente entre 140–160 BPM).
+- **Harmonia**: guitarras ou teclados, muitas vezes com acordes curtos e destacados.
+
+Para criar um template automático, programe um script Lua que gere trilhas com nomes e roteamentos adequados:
+
+```lua
+-- frevo_template.lua
+local tracks = {"Metais", "Sax", "Guitarra", "Baixo", "Bateria"}
+for i, name in ipairs(tracks) do
+  local track = reaper.InsertTrackAtIndex(i-1, true)
+  reaper.GetSetMediaTrackInfo_String(track, 'P_NAME', name, true)
+end
+```
+
+Execute o script ao iniciar um projeto e salve como template para reutilizar.
+
+## Groove Generator
+
+O frevo possui síncopas características e viradas rápidas. Você pode armazenar pequenos **trechos MIDI** de caixas e surdos e inseri-los aleatoriamente com outro script:
+
+```lua
+-- frevo_groove.lua
+local patterns = {"frevo_caixa.mid", "frevo_surdo.mid"}
+for _, p in ipairs(patterns) do
+  reaper.InsertMedia(p, 0)
+end
+```
+
+Ajuste o BPM conforme a referência desejada.
+
+## Referências de Estudo
+
+Para aprofundar seu entendimento, consulte livros e partituras de arranjadores reconhecidos:
+
+- **SpokFrevo Orquestra** – transcrições e métodos publicados pelo maestro Spok.
+- **Marcos FM** – cadernos de arranjos que analisam a escrita de metais e seções rítmicas.
+- **Roque Neto** – estudos sobre técnicas de frevo pernambucano.
+- Títulos como **"A linguagem do frevo"** (diversos autores) abordam harmonias, contrapontos e a evolução histórica do gênero.
+
+Essas obras servem de base teórica para programar seus scripts: observe as progressões de acordes, contrapontos em metais e convenções rítmicas. Transforme cada elemento em macros ou sequências MIDI reutilizáveis.
+
+## Dicas de Uso
+
+1. **Mantenha bibliotecas de metais** com articulações fortes (staccato, marcato). Combine com sons de percussão vibrantes.
+2. **Crie presets de equalização e compressão** para preservar o brilho dos metais e o punch da bateria.
+3. **Use o editor de partituras do Reaper** para revisar as linhas geradas e exportar PDFs rapidamente.
+
+Com essas ferramentas, você terá uma base para montar arranjos de frevo com eficiência, seguindo a sonoridade de grupos consagrados e adaptando às suas próprias composições.
